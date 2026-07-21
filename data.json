@@ -10,8 +10,8 @@
     { "id": "map8", "name": "Amazon", "thumb": "images/thumbs/location_07_Amazon.png", "img": "images/maps/Minimap_L7.png"  }
   ],
   "fishes": [
-    { "id": "f_Largetoothflounder", "name": "Largetooth Flounder", "img": "images/fishes/fish_LargetoothFlounder_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
-    { "id": "f_Bluefish", "name": "Bluefish", "img": "images/fishes/fish_BlueFish_mini.png", "shadowSize": [3], "shadowSpeed": [1] },
+    { "id": "f_Largetoothflounder", "name": "Largetooth Flounder", "img": "images/fishes/fish_LargetoothFlounder_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1], "activity": "night" },
+    { "id": "f_Bluefish", "name": "Bluefish", "img": "images/fishes/fish_BlueFish_mini.png", "shadowSize": [3], "shadowSpeed": [1], "activity": "day" },
     { "id": "f_Porcupinefish", "name": "Porcupinefish", "img": "images/fishes/fish_Porcupinefish_mini.png", "shadowSize": [1], "shadowSpeed": [1] },
     { "id": "f_LongtailTuna", "name": "Longtail Tuna", "img": "images/fishes/fish_LongtailTuna_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
     { "id": "f_GreenHuumpheadParrotfish", "name": "Green Humphead Parrotfish", "img": "images/fishes/fish_GreenHumpheadParrotfish_mini.png", "shadowSize": [3, 4], "shadowSpeed": [1] },

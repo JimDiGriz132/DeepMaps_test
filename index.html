@@ -151,6 +151,7 @@
         }
 
         .fish-avatar-wrapper {
+            position: relative; 
             width: 90px; 
             height: 90px;
             border-radius: 50%;
@@ -158,15 +159,50 @@
             justify-content: center; 
             align-items: center;
             background: #88ccf1;
-            overflow: hidden;
+            overflow: visible; /* Promijenjeno s hidden na visible kako ikona može izlaziti van kruga */
             border: 2px solid rgba(255,255,255,0.1);
         }
-        .fish-avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .fish-color-dot {
-            width: 35px; height: 35px;
+        .fish-avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+        .fish-activity-badge {
+            position: absolute;
+            top: -6px;   /* Pomaknuto prema gore da izlazi iz kruga */
+            right: -6px;  /* Pomaknuto u desno da izlazi iz kruga */
+            width: 32px;  /* Povećano */
+            height: 32px; /* Povećano */
+            background: rgba(30, 30, 30, 0.85);
             border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #5a9bd4; /* Istaknuti rub u boji aplikacije */
+            box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+            z-index: 10;
+        }
+
+        .fish-activity-badge img {
+            width: 20px;  /* Veća slika unutra */
+            height: 20px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 2px #ffeb3b); /* Jači sjaj da se bolje vidi */
+        }
+
+        .activity-badge-exclamation {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 14px;  /* Veći uskličnik */
+            height: 14px;
+            background: #d32f2f;
+            color: #fff;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #222;
+            z-index: 11;
         }
 
         .fish-stats { font-size: 13px; color: #aaa; display: flex; flex-direction: column; gap: 8px; }
@@ -238,6 +274,43 @@
         .shadow-svg-icon:nth-child(3) { width: 25px; height: 23px; }
         .shadow-svg-icon:nth-child(4) { width: 30px; height: 28px; }
         .shadow-svg-icon:nth-child(5) { width: 35px; height: 33px; }
+
+        .activity-container {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            height: 22px;
+            margin-top: 4px;
+        }
+
+        .activity-icon-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .activity-icon {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .activity-badge-exclamation {
+            position: absolute;
+            top: -3px;
+            right: -4px;
+            width: 10px;
+            height: 10px;
+            background: #d32f2f;
+            color: #fff;
+            font-size: 8px;
+            font-weight: bold;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #222;
+        }
+
 
         #mapWrapper { 
             display: flex;
@@ -552,6 +625,22 @@
                 }
             }
 
+            // --- Activity Badge generiranje (samo ako je eksplicitno 'day' ili 'night') ---
+            let activityBadgeHtml = '';
+            if (fish.activity === 'day') {
+                activityBadgeHtml = `
+                    <div class="fish-activity-badge" title="Day only">
+                        <img src="images/gui_fishinfo_active_day.png">
+                        <div class="activity-badge-exclamation">!</div>
+                    </div>`;
+            } else if (fish.activity === 'night') {
+                activityBadgeHtml = `
+                    <div class="fish-activity-badge" title="Night only">
+                        <img src="images/gui_fishinfo_active_night.png">
+                        <div class="activity-badge-exclamation">!</div>
+                    </div>`;
+            }
+
             const sizeBlock = (fish.shadowSize && Array.isArray(fish.shadowSize) && fish.shadowSize.length > 0) ? `
                 <div class="stats-row">
                     Shadow size
@@ -580,6 +669,7 @@
                 <div class="fish-header">
                     <div class="fish-avatar-wrapper" style="background: ${fish.bg || '#88ccf1'};">
                         <img src="${fish.img}" alt="${fish.name}">
+                        ${activityBadgeHtml}
                     </div>
                 </div>
                 <div class="fish-stats">
