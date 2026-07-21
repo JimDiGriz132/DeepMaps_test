@@ -1,0 +1,30 @@
+{
+  "maps": [
+    { "id": "map1", "name": "Paradise Island", "thumb": "images/thumbs/maps_logo_paradise_island.png", "img": "images/maps/Minimap_L0.png" },
+    { "id": "map2", "name": "Great Lakes", "thumb": "images/thumbs/location_01_greatlakes.png", "img": "images/maps/Minimap_L1.png"  },
+    { "id": "map3", "name": "Costa Rica", "thumb": "images/thumbs/location_02_costarica.png", "img": "images/maps/Minimap_L2.png"  },
+    { "id": "map4", "name": "Alaska", "thumb": "images/thumbs/location_03_alaska.png", "img": "images/maps/Minimap_L3.png"  },
+    { "id": "map5", "name": "Australia", "thumb": "images/thumbs/location_04_australia.png", "img": "images/maps/Minimap_L4.png"  },
+    { "id": "map6", "name": "Scotland", "thumb": "images/thumbs/location_05_scotland.png", "img": "images/maps/Minimap_L5.png"  },
+    { "id": "map7", "name": "Thailand", "thumb": "images/thumbs/location_06_Thailand.png", "img": "images/maps/Minimap_L6.png"  },
+    { "id": "map8", "name": "Amazon", "thumb": "images/thumbs/location_07_Amazon.png", "img": "images/maps/Minimap_L7.png"  }
+  ],
+  "fishes": [
+    { "id": "f_Largetoothflounder", "name": "Largetooth Flounder", "img": "images/fishes/fish_LargetoothFlounder_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
+    { "id": "f_Bluefish", "name": "Bluefish", "img": "images/fishes/fish_BlueFish_mini.png", "shadowSize": [3], "shadowSpeed": [1] },
+    { "id": "f_Porcupinefish", "name": "Porcupinefish", "img": "images/fishes/fish_Porcupinefish_mini.png", "shadowSize": [1], "shadowSpeed": [1] },
+    { "id": "f_LongtailTuna", "name": "Longtail Tuna", "img": "images/fishes/fish_LongtailTuna_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
+    { "id": "f_GreenHuumpheadParrotfish", "name": "Green Humphead Parrotfish", "img": "images/fishes/fish_GreenHumpheadParrotfish_mini.png", "shadowSize": [3, 4], "shadowSpeed": [1] },
+    { "id": "f_BlueTrevally", "name": "Blue Trevally", "img": "images/fishes/fish_BlueTrevally_mini.png", "shadowSize": [3], "shadowSpeed": [1] },
+    { "id": "f_WhiteTuna", "name": "White Tuna", "img": "images/fishes/fish_WhiteTuna_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1, 2] },
+    { "id": "f_Clovnfish", "name": "Clownfish", "img": "images/fishes/fish_Clownfish_mini.png", "shadowSize": null, "shadowSpeed": null },
+    { "id": "f_Bonefish", "name": "Bonefish", "img": "images/fishes/fish_Bonefish_mini.png", "shadowSize": [3], "shadowSpeed": [2, 3] },
+    { "id": "f_PelagicStingray", "name": "Pelagic Stingray", "img": "images/fishes/fish_PelagicStingray_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
+    { "id": "f_SnubnosePompano", "name": "Snubnose Pompano", "img": "images/fishes/fish_SnubnosePompano_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] }
+  ],
+  "sets": [
+    { "id": "set1", "map_id": "map1", "name": "Set 1", "fishes": ["f_Bluefish", "f_Largetoothflounder", "f_Porcupinefish", "f_LongtailTuna"] },
+    { "id": "set2", "map_id": "map1", "name": "Set 2", "fishes": ["f_GreenHuumpheadParrotfish", "f_BlueTrevally", "f_WhiteTuna", "f_Clovnfish"] },
+    { "id": "set3", "map_id": "map1", "name": "Set 3", "fishes": ["f_Bonefish", "f_BlueTrevally", "f_SnubnosePompano", "f_PelagicStingray"] }
+  ]
+}

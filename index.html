@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <title>Deep Maps</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { 
+            --bg: #1c1c1c; 
+            --panel: #2d2d2d; 
+            --accent: #5a9bd4; 
+            --text: #e0e0e0;
+        }
+        
+        body { 
+            margin: 0; 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            overflow: hidden;
+        }
+        
+        .top-bar {
+            display: flex;
+            background: #111;
+            padding: 10px;
+            gap: 15px;
+            align-items: flex-start;
+            border-bottom: 2px solid #333;
+        }
+
+        .map-selector { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            grid-template-rows: repeat(2, 1fr);
+            gap: 5px; 
+            flex-grow: 1;
+        }
+        
+        .map-btn { 
+            cursor: pointer; 
+            border: 2px solid #444; 
+            border-radius: 4px;
+            height: 45px; 
+            background: #222; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 12px;
+            font-weight: bold;
+            color: #ccc;
+            overflow: hidden;
+            transition: 0.2s;
+        }
+        .map-btn img { width: 100%; height: 100%; object-fit: contain; }
+        .map-btn:hover, .map-btn.active { border-color: var(--accent); background: #333; color: #fff; }
+
+        .admin-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 180px;
+        }
+        
+        #adminBtn { 
+            padding: 10px; 
+            background: #444; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold;
+            border-radius: 4px;
+        }
+        #adminBtn.on { background: #d32f2f; }
+
+        .main-layout { 
+            display: flex; 
+            flex: 1; 
+            overflow: hidden; 
+        }
+        
+        .sidebar { 
+            width: 220px; 
+            background: var(--panel); 
+            padding: 15px; 
+            overflow-y: auto; 
+            border-right: 2px solid #222;
+        }
+
+        .set-btn {
+            background: #3a3a3a;
+            border: 2px solid transparent;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+        }
+        .set-btn.active { border-color: var(--accent); background: #4a4a4a; }
+
+        .stage {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 15px;
+            background: #222;
+            overflow: hidden;
+            gap: 10px; /* Minimalan razmak između kartica i mape */
+        }
+
+        
+        .fish-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            gap: 15px;
+            width: 340px; 
+            height: 100%;
+            padding: 10px 0;
+            flex-shrink: 0;
+        }
+
+        .fish-card { 
+            background: #262626; 
+            border-radius: 8px; 
+            padding: 20px; 
+            cursor: pointer; 
+            border: 3px solid transparent; 
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            gap: 15px;
+            opacity: 0.8; 
+            transition: 0.2s;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+            min-height: 340px;
+            max-height: calc(25vh - 15px);
+        }   
+
+        .fish-card.active { border-color: var(--accent); opacity: 1; background: #2f2f2f; }
+        .fish-card.empty { visibility: hidden; }
+
+        .fish-header {
+            display: flex;
+            align-items: center;
+        }
+
+        .fish-avatar-wrapper {
+            width: 90px; 
+            height: 90px;
+            border-radius: 50%;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            background: #88ccf1;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        .fish-avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .fish-color-dot {
+            width: 35px; height: 35px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .fish-stats { font-size: 13px; color: #aaa; display: flex; flex-direction: column; gap: 8px; }
+
+        .stats-row {
+            font-size: 20px;
+            color: #aaa;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .icons-container {
+            display: flex;
+            gap: 6px;
+            align-items: flex-end;
+            height: 32px; 
+        }
+
+        /* Stil za peraja (Shadow size - 5 stupnjeva) */
+        .fin-icon {
+            width: 10px;
+            height: 14px;
+            background: #444;
+            /*clip-path: polygon(0% 100%, 100% 60%, 40% 0%, 0% 0%);*/
+            opacity: 0.7;
+            transition: 0.2s;
+        }
+        .fin-icon.active {
+            background: #e8dfc1;
+            opacity: 1;
+        }
+
+        /* Stil za brzinu (Shadow speed - 3 stupnja: ||, >, >>) */
+        .speed-icon {
+            font-size: 26px;
+            color: #444;
+            opacity: 0.7;
+            font-weight: bold;
+            margin-right: 4px;
+        }
+        .speed-icon.active {
+            color: #e8dfc1;
+            opacity: 1;
+        }
+
+        .icons-container {
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+            height: 26px; 
+        }
+
+        .shadow-svg-icon {
+            fill: #444;
+            opacity: 0.3;
+            transition: 0.2s;
+            display: inline-block;
+        }
+
+        .shadow-svg-icon.active {
+            fill: #e6c27a;
+            opacity: 1;
+        }
+
+        
+        .shadow-svg-icon:nth-child(1) { width: 10px;  height: 13px; }
+        .shadow-svg-icon:nth-child(2) { width: 20px; height: 18px; }
+        .shadow-svg-icon:nth-child(3) { width: 25px; height: 23px; }
+        .shadow-svg-icon:nth-child(4) { width: 30px; height: 28px; }
+        .shadow-svg-icon:nth-child(5) { width: 35px; height: 33px; }
+
+        #mapWrapper { 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        #mapContainer {
+            position: relative;
+            display: inline-block;
+            line-height: 0;
+            touch-action: none;
+        }
+
+        #mainMap { 
+            display: block; 
+            max-width: 100%; 
+            max-height: 75vh;
+            border-radius: 8px;
+            border: 4px dashed #e8dfc1;
+            background: #90d4d4; 
+        }
+        #mainMap.clickable { cursor: crosshair; }
+        
+        #markersLayer {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .marker {
+            position: absolute;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+            pointer-events: auto;
+            cursor: pointer;
+            box-sizing: border-box;
+            touch-action: none;
+        }
+        .marker.draggable { cursor: grab; }
+        .marker.draggable:active { cursor: grabbing; }
+
+        .marker-info-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 14px;
+            height: 14px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 9px;
+            font-weight: bold;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #222;
+            pointer-events: none;
+        }
+
+        .quality-gold { border: 4px solid #FFD700; }
+        .quality-silver { border: 4px solid #C0C0C0; }
+        .quality-bronze { border: 4px solid #CD7F32; }
+
+        .placeholder-text { text-align: center; color: #666; margin-top: 50px; font-size: 13px; }
+
+        #qualityModal {
+            display: none;
+            position: fixed;
+            background: #222;
+            padding: 15px;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        #qualityModal button {
+            margin: 5px; padding: 8px 12px; cursor: pointer;
+            border: none; border-radius: 4px; color: #000; font-weight: bold;
+        }
+        .btn-gold { background: #FFD700; }
+        .btn-silver { background: #C0C0C0; }
+        .btn-bronze { background: #CD7F32; }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="map-selector" id="mapSelector"></div>
+    <div class="admin-controls">
+        <button id="adminBtn" onclick="toggleAdmin()">Admin Mode: OFF</button>
+        <button id="showAllBtn" onclick="resetToSetView()" style="display:none; padding:6px; background:#333; color:#fff; border:1px solid #555; cursor:pointer; font-size:11px; border-radius:4px;">Show all from set</button>
+    </div>
+</div>
+
+<div class="main-layout">
+    <div class="sidebar" id="setsPanel">
+        <div class="placeholder-text">Choose a map</div>
+    </div>
+
+    <div class="stage">
+        <div class="fish-column" id="fishColumnLeft"></div>
+
+        <div id="mapWrapper">
+            <div id="mapContainer">
+                <img id="mainMap" src="" alt="Choose a map" onclick="handleMapClick(event)">
+                <div id="markersLayer"></div>
+            </div>
+        </div>
+
+        <div class="fish-column" id="fishColumnRight"></div>
+    </div>
+</div>
+
+<div id="qualityModal">
+    <p style="margin: 0 0 10px 0; font-size: 13px; text-align: center; color:#fff;">Choose spot quality:</p>
+    <div style="display: flex; gap: 5px; justify-content: center;">
+        <button class="btn-gold" onclick="saveMarker('Gold')">Gold</button>
+        <button class="btn-silver" onclick="saveMarker('Silver')">Silver</button>
+        <button class="btn-bronze" onclick="saveMarker('Bronze')">Bronze</button>
+    </div>
+    <div style="text-align: center; margin-top: 8px;">
+        <button style="background: #444; color: white; padding: 4px 8px; font-size:11px;" onclick="closeQualityModal()">Cancel</button>
+    </div>
+</div>
+
+<!-- Modal za urezivanje / pregled markera -->
+<div id="editMarkerModal" style="display:none; position:fixed; background:#222; padding:15px; border:2px solid var(--accent); border-radius:8px; z-index:1000; box-shadow:0 5px 15px rgba(0,0,0,0.5); width: 280px;">
+    <p style="margin: 0 0 10px 0; font-size: 13px; text-align: center; color:#fff; font-weight:bold;" id="modalTitle">Edit Marker</p>
+    
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+        <label style="font-size: 11px; color: #aaa;">Info / Note:</label>
+        <input type="text" id="markerInfoInput" style="padding: 6px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; font-size: 12px;" placeholder="Enter info...">
+        
+        <label style="font-size: 11px; color: #aaa;">In-game Image:</label>
+        <div id="imagePreviewContainer" style="display:none; align-items: center; gap: 10px; background: #1a1a1a; padding: 5px; border-radius: 4px;">
+            <img id="modalImagePreview" src="" onclick="openFullImage(this.src)" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; cursor: pointer;" title="Click to view full size">
+            <button type="button" onclick="removeCurrentMarkerImage()" style="background: #d32f2f; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 10px; cursor: pointer;">Remove Image</button>
+        </div>
+        <input type="file" id="markerImgFile" accept="image/*" style="font-size: 11px; color: #ccc;">
+        
+        <button id="saveEditBtn" onclick="saveMarkerEdits()" style="margin-top: 5px; background: var(--accent); color: white; padding: 8px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Save Changes</button>
+        <button id="deleteMarkerBtn" onclick="deleteActiveMarker()" style="background: #d32f2f; color: white; padding: 8px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Delete Marker</button>
+        <button onclick="closeEditModal()" style="background: #444; color: white; padding: 6px; border: none; border-radius: 4px; font-size: 11px; cursor: pointer;">Close</button>
+    </div>
+</div>
+
+<!-- Container za prikaz slike u punoj veličini -->
+<div id="fullImageModal" onclick="closeFullImage()" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:2000; justify-content:center; align-items:center; cursor:pointer;">
+    <img id="fullImageElement" style="max-width:90vw; max-height:90vh; border-radius:6px; box-shadow:0 0 20px rgba(0,0,0,0.8);">
+</div>
+
+
+<script>
+    const SUPABASE_URL = 'https://qkdijflbuvsztoaxaljt.supabase.co'; 
+    const SUPABASE_KEY = 'sb_publishable_lbqtPmtDI1dBws388aNgcA_5oC7FaxE';
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let MAPS = [];
+    let FISH_DB = []; 
+    let SETS = [];
+
+    let currentMap = null;
+    let currentSet = null;
+    let selectedFish = null;
+    let pendingMarkerData = null;
+    let isAdmin = false;
+
+    const ADMIN_PASSWORD = "admin123"; 
+
+    async function loadData() {
+        try {
+            const response = await fetch('data.json');
+            const data = await response.json();
+            MAPS = data.maps;
+            FISH_DB = data.fishes; // Očekuje se da je u data.json fishes: [...]
+            SETS = data.sets;
+            initMapSelector();
+        } catch (error) {
+            console.error("Error loading data.json:", error);
+            alert("Not possible to load data.json over local server!");
+        }
+    }
+
+    window.toggleAdmin = function() {
+        if (!isAdmin) {
+            let pass = prompt("Insert Admin mode password:");
+            if (pass === ADMIN_PASSWORD) {
+                isAdmin = true;
+                document.getElementById('adminBtn').classList.add('on');
+                document.getElementById('showAllBtn').style.display = 'block';
+            } else {
+                alert("Wrong password!");
+                return;
+            }
+        } else {
+            isAdmin = false;
+            document.getElementById('adminBtn').classList.remove('on');
+            document.getElementById('showAllBtn').style.display = 'none';
+        }
+        document.getElementById('adminBtn').innerText = 'Admin Mode: ' + (isAdmin ? 'ON' : 'OFF');
+        updateMapCursor();
+        fetchAndDrawMarkers();
+    };
+
+    function initMapSelector() {
+        const container = document.getElementById('mapSelector');
+        container.innerHTML = '';
+        MAPS.forEach(m => {
+            const btn = document.createElement('div');
+            btn.className = 'map-btn';
+            btn.innerHTML = `<img src="${m.thumb}" alt="${m.name}">`;
+            btn.onclick = () => selectMap(m, btn);
+            container.appendChild(btn);
+        });
+        renderFishSlots([]);
+    }
+
+    function selectMap(mapObj, btnElement) {
+        currentMap = mapObj;
+        currentSet = null;
+        selectedFish = null;
+        
+        document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('active'));
+        if(btnElement) btnElement.classList.add('active');
+
+        document.getElementById('mainMap').src = mapObj.img; 
+        document.getElementById('markersLayer').innerHTML = '';
+
+        const mapSets = SETS.filter(s => s.map_id === mapObj.id);
+        const setsPanel = document.getElementById('setsPanel');
+        setsPanel.innerHTML = '';
+
+        if (mapSets.length === 0) {
+            setsPanel.innerHTML = '<div class="placeholder-text">No sets for this map.</div>';
+            renderFishSlots([]);
+            return;
+        }
+
+        mapSets.forEach(set => {
+            const setBtn = document.createElement('div');
+            setBtn.className = 'set-btn';
+            setBtn.innerText = set.name;
+            setBtn.onclick = () => selectSet(set, setBtn);
+            setsPanel.appendChild(setBtn);
+        });
+
+        renderFishSlots([]); 
+    }
+
+    function selectSet(setObj, btnElement) {
+        currentSet = setObj;
+        selectedFish = null;
+
+        document.querySelectorAll('.set-btn').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        renderFishSlots(setObj.fishes);
+        updateMapCursor();
+        fetchAndDrawMarkers(); 
+    }
+
+    window.resetToSetView = function() {
+        selectedFish = null;
+        document.querySelectorAll('.fish-card').forEach(c => c.classList.remove('active'));
+        updateMapCursor();
+        fetchAndDrawMarkers();
+    };
+
+    function renderFishSlots(fishIds) {
+        const leftCol = document.getElementById('fishColumnLeft');
+        const rightCol = document.getElementById('fishColumnRight');
+        leftCol.innerHTML = ''; rightCol.innerHTML = '';
+
+        for(let i = 0; i < 4; i++) {
+            const targetCol = i < 2 ? leftCol : rightCol;
+            const fishId = fishIds[i];
+            const fish = fishId ? FISH_DB.find(f => f.id === fishId) : null;
+            
+            if (!fishId || !fish) {
+                targetCol.innerHTML += `<div class="fish-card empty"></div>`;
+                continue;
+            }
+
+            // --- Shadow Size generiranje (SVG) ---
+            let sizeHtml = '';
+            if (fish.shadowSize && Array.isArray(fish.shadowSize) && fish.shadowSize.length > 0) {
+                for (let s = 1; s <= 5; s++) {
+                    let isActive = fish.shadowSize.includes(s) ? 'active' : '';
+                    sizeHtml += `
+                        <svg class="shadow-svg-icon ${isActive}" viewBox="0 0 47 55">
+                            <path d="M38.75 52.31C37.35 50.88 36.64 48.88 35.56 47.18C32.94 43.09 28.74 39.69 24.78 36.97C19.03 33.01 6.81 29.32 3.36 23.4C1.4 20.03 3.78 15.02 6.59 12.85C11.22 9.28 18.24 10.91 22.54 14.22C30.6 20.43 38.03 29.72 39.06 40.25C39.42 43.85 41.46 49.28 38.75 52.31Z"/>
+                        </svg>`;
+                }
+            }
+
+            // --- Shadow Speed generiranje ---
+            let speedSymbols = ['❚❚', '▶', '▶▶'];
+            let speedHtml = '';
+            if (fish.shadowSpeed && Array.isArray(fish.shadowSpeed) && fish.shadowSpeed.length > 0) {
+                for (let sp = 1; sp <= 3; sp++) {
+                    let isActive = fish.shadowSpeed.includes(sp) ? 'active' : '';
+                    speedHtml += `<span class="speed-icon ${isActive}">${speedSymbols[sp-1]}</span>`;
+                }
+            }
+
+            const sizeBlock = (fish.shadowSize && Array.isArray(fish.shadowSize) && fish.shadowSize.length > 0) ? `
+                <div class="stats-row">
+                    Shadow size
+                    <div class="icons-container">${sizeHtml}</div>
+                </div>` : `
+                <div class="stats-row">
+                    Shadow size
+                    <div style="font-size: 11px; color: #666; font-style: italic; margin-top: 2px;">no shadow</div>
+                </div>`;
+
+            const speedBlock = (fish.shadowSpeed && Array.isArray(fish.shadowSpeed) && fish.shadowSpeed.length > 0) ? `
+                <div class="stats-row">
+                    Shadow speed
+                    <div class="icons-container">${speedHtml}</div>
+                </div>` : `
+                <div class="stats-row">
+                    Shadow speed
+                    <div style="font-size: 11px; color: #666; font-style: italic; margin-top: 2px;">no shadow</div>
+                </div>`;
+
+            const card = document.createElement('div');
+            card.className = 'fish-card';
+            card.id = `card-${fish.id}`;
+            
+            card.innerHTML = `
+                <div class="fish-header">
+                    <div class="fish-avatar-wrapper" style="background: ${fish.bg || '#88ccf1'};">
+                        <img src="${fish.img}" alt="${fish.name}">
+                    </div>
+                </div>
+                <div class="fish-stats">
+                    ${sizeBlock}
+                    ${speedBlock}
+                </div>
+            `;
+
+            card.onclick = () => activateFish(fish);
+            targetCol.appendChild(card);
+        }
+    }
+
+    function activateFish(fish) {
+        if (selectedFish && selectedFish.id === fish.id) {
+            resetToSetView();
+            return;
+        }
+
+        selectedFish = fish;
+        
+        document.querySelectorAll('.fish-card').forEach(c => c.classList.remove('active'));
+        document.getElementById(`card-${fish.id}`).classList.add('active');
+        
+        updateMapCursor();
+        fetchAndDrawMarkers();
+    }
+
+    function updateMapCursor() {
+        const mapEl = document.getElementById('mainMap');
+        if (isAdmin && selectedFish) {
+            mapEl.classList.add('clickable');
+        } else {
+            mapEl.classList.remove('clickable');
+        }
+    }
+
+    window.handleMapClick = function(e) {
+        if (!currentMap) return;
+
+        if (isAdmin && selectedFish) {
+            const img = document.getElementById('mainMap');
+            const rect = img.getBoundingClientRect();
+
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            
+            if (x < 0 || y < 0 || x > rect.width || y > rect.height) return;
+
+            const xPercent = (x / rect.width) * 100;
+            const yPercent = (y / rect.height) * 100;
+
+            pendingMarkerData = {
+                map_id: currentMap.id,
+                fish_id: selectedFish.id,
+                x: xPercent.toFixed(2),
+                y: yPercent.toFixed(2)
+            };
+
+            const modal = document.getElementById('qualityModal');
+            modal.style.display = 'block';
+            modal.style.left = (e.clientX + 10) + 'px';
+            modal.style.top = (e.clientY + 10) + 'px';
+            return;
+        }
+
+        if (currentSet && !selectedFish) {
+            fetchAndDrawMarkers();
+        }
+    };
+
+    window.saveMarker = async function(quality) {
+        if (!pendingMarkerData) return;
+        
+        pendingMarkerData.quality = quality;
+        
+        const { error } = await db.from('markers').insert([pendingMarkerData]);
+        if (error) {
+            alert("Error saving to base!");
+            console.error(error);
+        }
+        
+        closeQualityModal();
+        fetchAndDrawMarkers();
+    };
+
+    window.closeQualityModal = function() {
+        document.getElementById('qualityModal').style.display = 'none';
+        pendingMarkerData = null;
+    };
+
+    async function fetchAndDrawMarkers() {
+        if (!currentMap) return;
+
+        let query = db.from('markers').select('*').eq('map_id', currentMap.id);
+
+        if (selectedFish) {
+            query = query.eq('fish_id', selectedFish.id);
+        } else if (currentSet) {
+            query = query.in('fish_id', currentSet.fishes);
+        } else {
+            document.getElementById('markersLayer').innerHTML = '';
+            return;
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error("Error fetching:", error);
+            return;
+        }
+
+        const layer = document.getElementById('markersLayer');
+        layer.innerHTML = '';
+
+        if (!data) return;
+
+        data.forEach(m => {
+            const fish = FISH_DB.find(f => f.id === m.fish_id);
+            if (!fish) return;
+
+            const el = document.createElement('div');
+            el.className = `marker quality-${(m.quality || 'bronze').toLowerCase()}`;
+            if (isAdmin) el.classList.add('draggable');
+            
+            el.style.left = m.x + '%';
+            el.style.top = m.y + '%';
+            el.style.backgroundImage = `url(${fish.img})`;
+            
+            // Dodaje mali "i" u rub ako marker ima upisan info ili sliku
+            if (m.info || m.ingame_img) {
+                const badge = document.createElement('div');
+                badge.className = 'marker-info-badge';
+                badge.innerText = 'i';
+                el.appendChild(badge);
+            }
+            
+            if (isAdmin) {
+                let isDragging = false;
+                let startX = 0;
+                let startY = 0;
+
+                el.onpointerdown = (e) => {
+                    e.stopPropagation();
+                    isDragging = false;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    el.setPointerCapture(e.pointerId);
+                };
+
+                el.onpointermove = (e) => {
+                    if (!el.hasPointerCapture(e.pointerId)) return;
+                    
+                    const moveDistance = Math.hypot(e.clientX - startX, e.clientY - startY);
+                    if (moveDistance > 3) {
+                        isDragging = true;
+                        el.style.zIndex = 1000;
+                        
+                        const img = document.getElementById('mainMap');
+                        const rect = img.getBoundingClientRect();
+
+                        let x = e.clientX - rect.left;
+                        let y = e.clientY - rect.top;
+
+                        if (x < 0) x = 0;
+                        if (y < 0) y = 0;
+                        if (x > rect.width) x = rect.width;
+                        if (y > rect.height) y = rect.height;
+
+                        el.style.left = ((x / rect.width) * 100) + '%';
+                        el.style.top = ((y / rect.height) * 100) + '%';
+                    }
+                };
+
+                el.onpointerup = async (e) => {
+                    if (!el.hasPointerCapture(e.pointerId)) return;
+                    el.releasePointerCapture(e.pointerId);
+                    el.style.zIndex = 2;
+
+                    if (!isDragging) {
+                        openEditModal(m, e);
+                        return;
+                    }
+
+                    const img = document.getElementById('mainMap');
+                    const rect = img.getBoundingClientRect();
+                    
+                    let x = e.clientX - rect.left;
+                    let y = e.clientY - rect.top;
+
+                    if (x < 0) x = 0;
+                    if (y < 0) y = 0;
+                    if (x > rect.width) x = rect.width;
+                    if (y > rect.height) y = rect.height;
+
+                    const newX = ((x / rect.width) * 100).toFixed(2);
+                    const newY = ((y / rect.height) * 100).toFixed(2);
+
+                    const { error } = await db.from('markers')
+                        .update({ x: newX, y: newY })
+                        .eq('id', m.id)
+                        .select();
+
+                    if (error) {
+                        alert("Error moving marker.");
+                        fetchAndDrawMarkers();
+                    } else {
+                        m.x = newX;
+                        m.y = newY;
+                    }
+                };
+            } else {
+                el.onpointerup = (e) => {
+                    openEditModal(m, e);
+                };
+            }
+            
+            layer.appendChild(el);
+        });
+    }
+
+    async function deleteMarker(id) {
+        if (!isAdmin) return;
+        const { error } = await db.from('markers').delete().eq('id', id);
+        if (!error) {
+            fetchAndDrawMarkers();
+        } else {
+            alert("Error deleting.");
+        }
+    }
+
+    loadData();
+
+
+    let activeEditingMarkerId = null;
+    let currentMarkerObj = null;
+    let removeImageFlag = false;
+
+    // Sluša klikove po cijelom dokumentu da zatvori modal ako se klikne izvan njega
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('editMarkerModal');
+        
+        if (modal.style.display === 'block' && !modal.contains(event.target)) {
+            // Provjeri da klik nije bio na samom markeru (koji ponovno otvara modal)
+            if (!event.target.closest('.marker')) {
+                closeEditModal();
+            }
+        }
+    });
+
+    function openEditModal(markerObj, event) {
+        // Ako nije admin, a marker nema ni info ni sliku - uopće nemoj otvarati modal
+        if (!isAdmin && !markerObj.info && !markerObj.ingame_img) {
+            return;
+        }
+
+        activeEditingMarkerId = markerObj.id;
+        currentMarkerObj = markerObj;
+        removeImageFlag = false;
+        
+        const infoInput = document.getElementById('markerInfoInput');
+        const fileInput = document.getElementById('markerImgFile');
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        const previewImg = document.getElementById('modalImagePreview');
+        const saveBtn = document.getElementById('saveEditBtn');
+        const deleteBtn = document.getElementById('deleteMarkerBtn');
+        const modalTitle = document.getElementById('modalTitle');
+
+        infoInput.value = markerObj.info || '';
+        fileInput.value = '';
+
+        if (markerObj.ingame_img) {
+            previewImg.src = markerObj.ingame_img;
+            previewContainer.style.display = 'flex';
+        } else {
+            previewContainer.style.display = 'none';
+        }
+
+        if (!isAdmin) {
+            modalTitle.innerText = "Marker Info";
+            infoInput.disabled = true;
+            fileInput.style.display = 'none';
+            saveBtn.style.display = 'none';
+            deleteBtn.style.display = 'none';
+            if (markerObj.ingame_img) {
+                previewContainer.querySelector('button').style.display = 'none';
+            }
+        } else {
+            modalTitle.innerText = "Edit Marker";
+            infoInput.disabled = false;
+            fileInput.style.display = 'block';
+            saveBtn.style.display = 'block';
+            deleteBtn.style.display = 'block';
+            previewContainer.querySelector('button').style.display = 'block';
+        }
+
+        const modal = document.getElementById('editMarkerModal');
+        modal.style.display = 'block';
+        modal.style.left = (event.clientX + 10) + 'px';
+        modal.style.top = (event.clientY + 10) + 'px';
+    }
+
+    window.openFullImage = function(src) {
+        const fullModal = document.getElementById('fullImageModal');
+        const fullImg = document.getElementById('fullImageElement');
+        fullImg.src = src;
+        fullModal.style.display = 'flex';
+    };
+
+    window.closeFullImage = function() {
+        document.getElementById('fullImageModal').style.display = 'none';
+    };
+
+    window.removeCurrentMarkerImage = function() {
+        removeImageFlag = true;
+        document.getElementById('imagePreviewContainer').style.display = 'none';
+    };
+
+    window.closeEditModal = function() {
+        document.getElementById('editMarkerModal').style.display = 'none';
+        activeEditingMarkerId = null;
+        currentMarkerObj = null;
+        removeImageFlag = false;
+    };
+
+    window.saveMarkerEdits = async function() {
+        if (!activeEditingMarkerId || !isAdmin) return;
+
+        const newInfo = document.getElementById('markerInfoInput').value;
+        const fileInput = document.getElementById('markerImgFile');
+        let imageUrl = currentMarkerObj.ingame_img || null;
+
+        if (removeImageFlag) {
+            imageUrl = null;
+        }
+
+        if (fileInput.files && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+
+            const { error: uploadError } = await db.storage
+                .from('marker-images')
+                .upload(fileName, file);
+
+            if (uploadError) {
+                alert("Error uploading image!");
+                console.error(uploadError);
+                return;
+            }
+
+            const { data: publicUrlData } = db.storage
+                .from('marker-images')
+                .getPublicUrl(fileName);
+
+            imageUrl = publicUrlData.publicUrl;
+        }
+
+        const { error } = await db.from('markers')
+            .update({ info: newInfo, ingame_img: imageUrl })
+            .eq('id', activeEditingMarkerId);
+
+        if (error) {
+            alert("Error saving to database!");
+            console.error(error);
+        } else {
+            closeEditModal();
+            fetchAndDrawMarkers();
+        }
+    };
+
+    window.deleteActiveMarker = async function() {
+        if (!activeEditingMarkerId || !isAdmin) return;
+        
+        if (confirm("Are you sure you want to delete this marker?")) {
+            await deleteMarker(activeEditingMarkerId);
+            closeEditModal();
+        }
+    };
+
+</script>
+</body>
+</html>
