@@ -20,7 +20,7 @@
     { "id": "f_Clovnfish", "name": "Clownfish", "img": "images/fishes/fish_Clownfish_mini.png", "shadowSize": null, "shadowSpeed": null },
     { "id": "f_Bonefish", "name": "Bonefish", "img": "images/fishes/fish_Bonefish_mini.png", "shadowSize": [3], "shadowSpeed": [2, 3], "activity": "night" },
     { "id": "f_PelagicStingray", "name": "Pelagic Stingray", "img": "images/fishes/fish_PelagicStingray_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
-    { "id": "f_SnubnosePompano", "name": "Snubnose Pompano", "img": "fishes/fish_SnubnosePompano_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
+    { "id": "f_SnubnosePompano", "name": "Snubnose Pompano", "img": "images/fishes/fish_SnubnosePompano_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
 
     { "id": "f_PinkSalmon", "name": "Pink Salmon", "img": "images/fishes/fish_SalmonPink_mini.png", "shadowSize": [1, 2], "shadowSpeed": [2, 3] },
     { "id": "f_BrownTrout", "name": "Brown Trout", "img": "images/fishes/fish_BrownTrout_mini.png", "shadowSize": [3, 4], "shadowSpeed": [2], "activity": "night" },
