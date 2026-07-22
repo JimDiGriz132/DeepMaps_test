@@ -20,11 +20,48 @@
     { "id": "f_Clovnfish", "name": "Clownfish", "img": "images/fishes/fish_Clownfish_mini.png", "shadowSize": null, "shadowSpeed": null },
     { "id": "f_Bonefish", "name": "Bonefish", "img": "images/fishes/fish_Bonefish_mini.png", "shadowSize": [3], "shadowSpeed": [2, 3], "activity": "night" },
     { "id": "f_PelagicStingray", "name": "Pelagic Stingray", "img": "images/fishes/fish_PelagicStingray_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
-    { "id": "f_SnubnosePompano", "name": "Snubnose Pompano", "img": "images/fishes/fish_SnubnosePompano_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] }
+    { "id": "f_SnubnosePompano", "name": "Snubnose Pompano", "img": "fishes/fish_SnubnosePompano_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
+
+    { "id": "f_PinkSalmon", "name": "Pink Salmon", "img": "images/fishes/fish_SalmonPink_mini.png", "shadowSize": [1, 2], "shadowSpeed": [2, 3] },
+    { "id": "f_BrownTrout", "name": "Brown Trout", "img": "images/fishes/fish_BrownTrout_mini.png", "shadowSize": [3, 4], "shadowSpeed": [2], "activity": "night" },
+    { "id": "f_LakeTrout", "name": "Lake Trout", "img": "images/fishes/fish_LakeTrout_mini.png", "shadowSize": [3], "shadowSpeed": [2, 3] },
+    { "id": "f_LakeSturgeon", "name": "Lake Sturgeon", "img": "images/fishes/fish_LakeSturgeon_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1] },
+    { "id": "f_BrookTrout", "name": "Brook Trout", "img": "images/fishes/fish_BrookTrout_mini.png", "shadowSize": [2, 3], "shadowSpeed": [3] },
+    { "id": "f_CohoSalmon", "name": "Coho Salmon", "img": "images/fishes/fish_SalmonCoho_mini.png", "shadowSize": [3], "shadowSpeed": [2] },
+    { "id": "f_ChannelCatfish", "name": "Channel Catfish", "img": "images/fishes/fish_ChannelCatfish_mini.png", "shadowSize": [3], "shadowSpeed": [2] },
+    { "id": "f_LargemouthBass", "name": "Largemouth Bass", "img": "images/fishes/fish_LargemouthBass_mini.png", "shadowSize": [3], "shadowSpeed": [1] },
+    { "id": "f_WhiteBass", "name": "White Bass", "img": "images/fishes/fish_WhiteBass_mini.png", "shadowSize": [1, 2], "shadowSpeed": [2, 3] },
+    { "id": "f_YellowPerch", "name": "Yellow Perch", "img": "images/fishes/fish_YellowPerch_mini.png", "shadowSize": [1, 2], "shadowSpeed": [1, 2] },
+    { "id": "f_SeaLamprey", "name": "Sea Lamprey", "img": "images/fishes/fish_SeaLamprey_mini.png", "shadowSize": [1, 2], "shadowSpeed": [1] },
+    { "id": "f_ChinookSalmon", "name": "Chinook Salmon", "img": "images/fishes/fish_SalmonChinook_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1, 2] },
+
+    { "id": "f_Dorado", "name": "Dorado", "img": "images/fishes/fish_Dorado_mini.png", "shadowSize": [2, 3], "shadowSpeed": [2] },
+    { "id": "f_Roosterfish", "name": "Roosterfish", "img": "images/fishes/fish_Roosterfish_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
+    { "id": "f_Tarpon", "name": "Tarpon", "img": "images/fishes/fish_Tarpon_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1] },
+    { "id": "f_YellowfinTuna", "name": "Yellowfin Tuna", "img": "images/fishes/fish_YellowfinTuna_mini.png", "shadowSize": [4], "shadowSpeed": [1] },
+    { "id": "f_BroomtailGrouper", "name": "Broomtail Grouper", "img": "images/fishes/fish_BroomtailGrouper_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1], "activity": "day" },
+    { "id": "f_JackCrevalle", "name": "Jack Crevalle", "img": "images/fishes/fish_JackCrevalle_mini.png", "shadowSize": [2, 3], "shadowSpeed": [2], "activity": "day" },
+    { "id": "f_PacificSailfish", "name": "Pacific Sailfish", "img": "images/fishes/fish_PacificSailfish_mini.png", "shadowSize": [3, 4], "shadowSpeed": [1], "activity": "night" },
+    { "id": "f_StripedMarlin", "name": "Striped Marlin", "img": "images/fishes/fish_StripedMarlin_mini.png", "shadowSize": [4], "shadowSpeed": [1], "activity": "day" },
+    { "id": "f_Barracuda", "name": "Barracuda", "img": "images/fishes/fish_Barracuda_mini.png", "shadowSize": [2], "shadowSpeed": [2] },
+    { "id": "f_BlueMarlin", "name": "Blue Marlin", "img": "images/fishes/fish_BlueMarlin_mini.png", "shadowSize": null, "shadowSpeed": null },
+    { "id": "f_Pompano", "name": "Pompano", "img": "images/fishes/fish_Pompano_mini.png", "shadowSize": [1], "shadowSpeed": [1] },
+    { "id": "f_Snook", "name": "Snook", "img": "images/fishes/fish_Snook_mini.png", "shadowSize": [2], "shadowSpeed": [2, 3] }
+
+
   ],
   "sets": [
     { "id": "set1", "map_id": "map1", "name": "Set 1", "fishes": ["f_Bluefish", "f_Largetoothflounder", "f_Porcupinefish", "f_LongtailTuna"] },
     { "id": "set2", "map_id": "map1", "name": "Set 2", "fishes": ["f_GreenHuumpheadParrotfish", "f_BlueTrevally", "f_WhiteTuna", "f_Clovnfish"] },
-    { "id": "set3", "map_id": "map1", "name": "Set 3", "fishes": ["f_Bonefish", "f_BlueTrevally", "f_SnubnosePompano", "f_PelagicStingray"] }
+    { "id": "set3", "map_id": "map1", "name": "Set 3", "fishes": ["f_Bonefish", "f_BlueTrevally", "f_SnubnosePompano", "f_PelagicStingray"] },
+
+    { "id": "set4", "map_id": "map2", "name": "Set 1", "fishes": ["f_BrookTrout", "f_CohoSalmon", "f_ChannelCatfish", "f_LargemouthBass"] },
+    { "id": "set5", "map_id": "map2", "name": "Set 2", "fishes": ["f_ChinookSalmon", "f_SeaLamprey", "f_WhiteBass", "f_YellowPerch"] },
+    { "id": "set6", "map_id": "map2", "name": "Set 3", "fishes": ["f_BrownTrout", "f_LakeSturgeon", "f_LakeTrout", "f_PinkSalmon"] },
+
+    { "id": "set7", "map_id": "map3", "name": "Set 1", "fishes": ["f_Barracuda", "f_BlueMarlin", "f_Pompano", "f_Snook"] },
+    { "id": "set8", "map_id": "map3", "name": "Set 2", "fishes": ["f_Dorado", "f_Roosterfish", "f_Tarpon", "f_YellowfinTuna"] },
+    { "id": "set9", "map_id": "map3", "name": "Set 3", "fishes": ["f_BroomtailGrouper", "f_PacificSailfish", "f_JackCrevalle", "f_StripedMarlin"] }
+    
   ]
 }
