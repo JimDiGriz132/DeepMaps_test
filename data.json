@@ -1,4 +1,7 @@
-{
+{ 
+
+  "_comment": "below is list of maps, 'id' is used in sets",
+
   "maps": [
     { "id": "map1", "name": "Paradise Island", "thumb": "images/thumbs/maps_logo_paradise_island.png", "img": "images/maps/Minimap_L0.png" },
     { "id": "map2", "name": "Great Lakes", "thumb": "images/thumbs/location_01_greatlakes.png", "img": "images/maps/Minimap_L1.png"  },
@@ -9,47 +12,60 @@
     { "id": "map7", "name": "Thailand", "thumb": "images/thumbs/location_06_Thailand.png", "img": "images/maps/Minimap_L6.png"  },
     { "id": "map8", "name": "Amazon", "thumb": "images/thumbs/location_07_Amazon.png", "img": "images/maps/Minimap_L7.png"  }
   ],
+
+  "_comment": "below is list of fish that are used in sets",
+  "_comment": "'id' is used in set arrays; use naming convention 'f_FishName'; shadowSize is 1-5; shadowSpeed is 1-3; activity is night, day or empty= day/night fish",
+  "_comment": "img- you can leave blank or insert 'images/fishes/fish' ",
+  "_comment": "minigame can be mini_static, big_static, mini_moving, big_moving; left empty means fish with no minigame",
+  "_comment": "'rarity' can be rare and epic; left empty means fish is common",
+
   "fishes": [
     { "id": "f_Largetoothflounder", "name": "Largetooth Flounder", "img": "images/fishes/fish_LargetoothFlounder_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
     { "id": "f_Bluefish", "name": "Bluefish", "img": "images/fishes/fish_BlueFish_mini.png", "shadowSize": [3], "shadowSpeed": [1] },
     { "id": "f_Porcupinefish", "name": "Porcupinefish", "img": "images/fishes/fish_Porcupinefish_mini.png", "shadowSize": [1], "shadowSpeed": [1] },
     { "id": "f_LongtailTuna", "name": "Longtail Tuna", "img": "images/fishes/fish_LongtailTuna_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
-    { "id": "f_GreenHuumpheadParrotfish", "name": "Green Humphead Parrotfish", "img": "images/fishes/fish_GreenHumpheadParrotfish_mini.png", "shadowSize": [3, 4], "shadowSpeed": [1] },
+    { "id": "f_GreenHuumpheadParrotfish", "name": "Green Humphead Parrotfish", "img": "images/fishes/fish_GreenHumpheadParrotfish_mini.png", "shadowSize": [3, 4], "shadowSpeed": [1], "rarity": "rare" },
     { "id": "f_BlueTrevally", "name": "Blue Trevally", "img": "images/fishes/fish_BlueTrevally_mini.png", "shadowSize": [3], "shadowSpeed": [1] },
-    { "id": "f_WhiteTuna", "name": "White Tuna", "img": "images/fishes/fish_WhiteTuna_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1, 2] },
+    { "id": "f_WhiteTuna", "name": "White Tuna", "img": "images/fishes/fish_WhiteTuna_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1, 2], "minigame": "mini_static", "rarity": "rare" },
     { "id": "f_Clovnfish", "name": "Clownfish", "img": "images/fishes/fish_Clownfish_mini.png", "shadowSize": null, "shadowSpeed": null },
     { "id": "f_Bonefish", "name": "Bonefish", "img": "images/fishes/fish_Bonefish_mini.png", "shadowSize": [3], "shadowSpeed": [2, 3], "activity": "night" },
-    { "id": "f_PelagicStingray", "name": "Pelagic Stingray", "img": "images/fishes/fish_PelagicStingray_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
+    { "id": "f_PelagicStingray", "name": "Pelagic Stingray", "img": "images/fishes/fish_PelagicStingray_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1], "minigame": "mini_static", "rarity": "epic" },
     { "id": "f_SnubnosePompano", "name": "Snubnose Pompano", "img": "images/fishes/fish_SnubnosePompano_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
 
     { "id": "f_PinkSalmon", "name": "Pink Salmon", "img": "images/fishes/fish_SalmonPink_mini.png", "shadowSize": [1, 2], "shadowSpeed": [2, 3] },
     { "id": "f_BrownTrout", "name": "Brown Trout", "img": "images/fishes/fish_BrownTrout_mini.png", "shadowSize": [3, 4], "shadowSpeed": [2], "activity": "night" },
-    { "id": "f_LakeTrout", "name": "Lake Trout", "img": "images/fishes/fish_LakeTrout_mini.png", "shadowSize": [3], "shadowSpeed": [2, 3] },
-    { "id": "f_LakeSturgeon", "name": "Lake Sturgeon", "img": "images/fishes/fish_LakeSturgeon_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1] },
+    { "id": "f_LakeTrout", "name": "Lake Trout", "img": "images/fishes/fish_LakeTrout_mini.png", "shadowSize": [3], "shadowSpeed": [2, 3], "minigame": "mini_static", "rarity": "rare" },
+    { "id": "f_LakeSturgeon", "name": "Lake Sturgeon", "img": "images/fishes/fish_LakeSturgeon_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1], "minigame": "mini_static", "rarity": "epic" },
     { "id": "f_BrookTrout", "name": "Brook Trout", "img": "images/fishes/fish_BrookTrout_mini.png", "shadowSize": [2, 3], "shadowSpeed": [3] },
     { "id": "f_CohoSalmon", "name": "Coho Salmon", "img": "images/fishes/fish_SalmonCoho_mini.png", "shadowSize": [3], "shadowSpeed": [2] },
-    { "id": "f_ChannelCatfish", "name": "Channel Catfish", "img": "images/fishes/fish_ChannelCatfish_mini.png", "shadowSize": [3], "shadowSpeed": [2] },
+    { "id": "f_ChannelCatfish", "name": "Channel Catfish", "img": "images/fishes/fish_ChannelCatfish_mini.png", "shadowSize": [3], "shadowSpeed": [2], "minigame": "mini_static" },
     { "id": "f_LargemouthBass", "name": "Largemouth Bass", "img": "images/fishes/fish_LargemouthBass_mini.png", "shadowSize": [3], "shadowSpeed": [1] },
     { "id": "f_WhiteBass", "name": "White Bass", "img": "images/fishes/fish_WhiteBass_mini.png", "shadowSize": [1, 2], "shadowSpeed": [2, 3] },
     { "id": "f_YellowPerch", "name": "Yellow Perch", "img": "images/fishes/fish_YellowPerch_mini.png", "shadowSize": [1, 2], "shadowSpeed": [1, 2] },
     { "id": "f_SeaLamprey", "name": "Sea Lamprey", "img": "images/fishes/fish_SeaLamprey_mini.png", "shadowSize": [1, 2], "shadowSpeed": [1] },
-    { "id": "f_ChinookSalmon", "name": "Chinook Salmon", "img": "images/fishes/fish_SalmonChinook_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1, 2] },
+    { "id": "f_ChinookSalmon", "name": "Chinook Salmon", "img": "images/fishes/fish_SalmonChinook_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1, 2], "minigame": "mini_static", "rarity": "rare" },
 
     { "id": "f_Dorado", "name": "Dorado", "img": "images/fishes/fish_Dorado_mini.png", "shadowSize": [2, 3], "shadowSpeed": [2] },
     { "id": "f_Roosterfish", "name": "Roosterfish", "img": "images/fishes/fish_Roosterfish_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1] },
-    { "id": "f_Tarpon", "name": "Tarpon", "img": "images/fishes/fish_Tarpon_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1] },
+    { "id": "f_Tarpon", "name": "Tarpon", "img": "images/fishes/fish_Tarpon_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1], "minigame": "mini_static" },
     { "id": "f_YellowfinTuna", "name": "Yellowfin Tuna", "img": "images/fishes/fish_YellowfinTuna_mini.png", "shadowSize": [4], "shadowSpeed": [1] },
     { "id": "f_BroomtailGrouper", "name": "Broomtail Grouper", "img": "images/fishes/fish_BroomtailGrouper_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1], "activity": "day" },
     { "id": "f_JackCrevalle", "name": "Jack Crevalle", "img": "images/fishes/fish_JackCrevalle_mini.png", "shadowSize": [2, 3], "shadowSpeed": [2], "activity": "day" },
-    { "id": "f_PacificSailfish", "name": "Pacific Sailfish", "img": "images/fishes/fish_PacificSailfish_mini.png", "shadowSize": [3, 4], "shadowSpeed": [1], "activity": "night" },
-    { "id": "f_StripedMarlin", "name": "Striped Marlin", "img": "images/fishes/fish_StripedMarlin_mini.png", "shadowSize": [4], "shadowSpeed": [1], "activity": "day" },
+    { "id": "f_PacificSailfish", "name": "Pacific Sailfish", "img": "images/fishes/fish_PacificSailfish_mini.png", "shadowSize": [3, 4], "shadowSpeed": [1], "activity": "night", "minigame": "mini_static" },
+    { "id": "f_StripedMarlin", "name": "Striped Marlin", "img": "images/fishes/fish_StripedMarlin_mini.png", "shadowSize": [4], "shadowSpeed": [1], "activity": "day", "minigame": "mini_moving", "rarity": "rare" },
     { "id": "f_Barracuda", "name": "Barracuda", "img": "images/fishes/fish_Barracuda_mini.png", "shadowSize": [2], "shadowSpeed": [2] },
-    { "id": "f_BlueMarlin", "name": "Blue Marlin", "img": "images/fishes/fish_BlueMarlin_mini.png", "shadowSize": null, "shadowSpeed": null },
+    { "id": "f_BlueMarlin", "name": "Blue Marlin", "img": "images/fishes/fish_BlueMarlin_mini.png", "shadowSize": null, "shadowSpeed": null, "minigame": "mini_moving", "rarity": "rare" },
     { "id": "f_Pompano", "name": "Pompano", "img": "images/fishes/fish_Pompano_mini.png", "shadowSize": [1], "shadowSpeed": [1] },
     { "id": "f_Snook", "name": "Snook", "img": "images/fishes/fish_Snook_mini.png", "shadowSize": [2], "shadowSpeed": [2, 3] }
 
 
   ],
+
+  "_comment": "below is list of fish sets",
+  "_comment": "'id' should be unique, continue with set#",
+  "_comment": "'map_id' locates what map is set from",
+  "_comment": "array of fish in set is composed of fish id-s from above",
+
   "sets": [
     { "id": "set1", "map_id": "map1", "name": "Set 1", "fishes": ["f_Bluefish", "f_Largetoothflounder", "f_Porcupinefish", "f_LongtailTuna"] },
     { "id": "set2", "map_id": "map1", "name": "Set 2", "fishes": ["f_GreenHuumpheadParrotfish", "f_BlueTrevally", "f_WhiteTuna", "f_Clovnfish"] },

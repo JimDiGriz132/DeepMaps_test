@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Deep Maps</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { 
             --bg: #1c1c1c; 
@@ -110,9 +111,8 @@
             padding: 10px 15px;
             background: #222;
             overflow: hidden;
-            gap: 10px; /* Minimalan razmak između kartica i mape */
+            gap: 10px;
         }
-
         
         .fish-column {
             display: flex;
@@ -148,6 +148,8 @@
         .fish-header {
             display: flex;
             align-items: center;
+            justify-content: space-between; 
+            position: relative;
         }
 
         .fish-avatar-wrapper {
@@ -159,39 +161,39 @@
             justify-content: center; 
             align-items: center;
             background: #88ccf1;
-            overflow: visible; /* Promijenjeno s hidden na visible kako ikona može izlaziti van kruga */
+            overflow: visible;
             border: 2px solid rgba(255,255,255,0.1);
         }
         .fish-avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 
         .fish-activity-badge {
             position: absolute;
-            top: -6px;   /* Pomaknuto prema gore da izlazi iz kruga */
-            right: -6px;  /* Pomaknuto u desno da izlazi iz kruga */
-            width: 32px;  /* Povećano */
-            height: 32px; /* Povećano */
+            top: -6px;
+            right: -6px;
+            width: 32px;
+            height: 32px;
             background: rgba(30, 30, 30, 0.85);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid #5a9bd4; /* Istaknuti rub u boji aplikacije */
+            border: 2px solid #5a9bd4;
             box-shadow: 0 2px 6px rgba(0,0,0,0.6);
             z-index: 10;
         }
 
         .fish-activity-badge img {
-            width: 20px;  /* Veća slika unutra */
+            width: 20px;
             height: 20px;
             object-fit: contain;
-            filter: drop-shadow(0 0 2px #ffeb3b); /* Jači sjaj da se bolje vidi */
+            filter: drop-shadow(0 0 2px #ffeb3b);
         }
 
         .activity-badge-exclamation {
             position: absolute;
             top: -4px;
             right: -4px;
-            width: 14px;  /* Veći uskličnik */
+            width: 14px;
             height: 14px;
             background: #d32f2f;
             color: #fff;
@@ -215,28 +217,6 @@
             gap: 4px;
         }
 
-        .icons-container {
-            display: flex;
-            gap: 6px;
-            align-items: flex-end;
-            height: 32px; 
-        }
-
-        /* Stil za peraja (Shadow size - 5 stupnjeva) */
-        .fin-icon {
-            width: 10px;
-            height: 14px;
-            background: #444;
-            /*clip-path: polygon(0% 100%, 100% 60%, 40% 0%, 0% 0%);*/
-            opacity: 0.7;
-            transition: 0.2s;
-        }
-        .fin-icon.active {
-            background: #e8dfc1;
-            opacity: 1;
-        }
-
-        /* Stil za brzinu (Shadow speed - 3 stupnja: ||, >, >>) */
         .speed-icon {
             font-size: 26px;
             color: #444;
@@ -268,49 +248,11 @@
             opacity: 1;
         }
 
-        
         .shadow-svg-icon:nth-child(1) { width: 10px;  height: 13px; }
         .shadow-svg-icon:nth-child(2) { width: 20px; height: 18px; }
         .shadow-svg-icon:nth-child(3) { width: 25px; height: 23px; }
         .shadow-svg-icon:nth-child(4) { width: 30px; height: 28px; }
         .shadow-svg-icon:nth-child(5) { width: 35px; height: 33px; }
-
-        .activity-container {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            height: 22px;
-            margin-top: 4px;
-        }
-
-        .activity-icon-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-
-        .activity-icon {
-            width: 20px;
-            height: 20px;
-            object-fit: contain;
-        }
-
-        .activity-badge-exclamation {
-            position: absolute;
-            top: -3px;
-            right: -4px;
-            width: 10px;
-            height: 10px;
-            background: #d32f2f;
-            color: #fff;
-            font-size: 8px;
-            font-weight: bold;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #222;
-        }
-
 
         #mapWrapper { 
             display: flex;
@@ -402,6 +344,77 @@
         .btn-gold { background: #FFD700; }
         .btn-silver { background: #C0C0C0; }
         .btn-bronze { background: #CD7F32; }
+
+        .minigame-preview {
+            position: relative;
+            width: 100%;
+            height: 28px;
+            background: #1a1a1a;
+            overflow: hidden;
+            border-radius: 4px;
+            margin-top: 6px;
+            display: none;
+            border: 1px solid #333;
+            box-sizing: border-box;
+        }
+
+        .minigame-preview.active {
+            display: block;
+        }
+
+        .mg-track {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 8px;
+            right: 8px;
+            height: 6px;
+            background: #444;
+            border-radius: 3px;
+        }
+
+        .mg-box {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 16px;
+            border: 2px solid #ccc;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            z-index: 2;
+            box-sizing: border-box;
+        }
+
+        .style-mini_static .mg-box { width: 36px; right: 25px; }
+        .style-big_static .mg-box { width: 56px; right: 20px; }
+        .style-mini_moving .mg-box { width: 36px; animation: moveMiniBox 2.5s ease-in-out infinite alternate; }
+        .style-big_moving .mg-box { width: 56px; animation: moveBigBox 2.5s ease-in-out infinite alternate; }
+
+        @keyframes moveMiniBox {
+            0% { right: 10px; }
+            100% { right: calc(100% - 50%); }
+        }
+
+        @keyframes moveBigBox {
+            0% { right: 10px; }
+            100% { right: calc(100% - 50%); }
+        }
+
+        .fish-rarity-badge {
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .rarity-common { background: #444; color: #bbb; border: 1px solid #555; }
+        .rarity-rare { background: #e6c27a; color: #1c1c1c; border: 1px solid #ffeb3b; }
+        .rarity-epic { background: #8e44ad; color: #fff; border: 1px solid #9b59b6; box-shadow: 0 0 8px rgba(142, 68, 173, 0.6); }
+
+        .export-hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -411,6 +424,7 @@
     <div class="admin-controls">
         <button id="adminBtn" onclick="toggleAdmin()">Admin Mode: OFF</button>
         <button id="showAllBtn" onclick="resetToSetView()" style="display:none; padding:6px; background:#333; color:#fff; border:1px solid #555; cursor:pointer; font-size:11px; border-radius:4px;">Show all from set</button>
+        <button id="exportModalBtn" onclick="openExportModal()" style="padding: 8px; background: #2e7d32; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; font-size: 11px;">Export Image</button>
     </div>
 </div>
 
@@ -419,7 +433,9 @@
         <div class="placeholder-text">Choose a map</div>
     </div>
 
-    <div class="stage">
+    <div class="stage" style="position: relative;">
+        <svg id="exportLinesLayer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; display: none;"></svg>
+        
         <div class="fish-column" id="fishColumnLeft"></div>
 
         <div id="mapWrapper">
@@ -445,7 +461,6 @@
     </div>
 </div>
 
-<!-- Modal za urezivanje / pregled markera -->
 <div id="editMarkerModal" style="display:none; position:fixed; background:#222; padding:15px; border:2px solid var(--accent); border-radius:8px; z-index:1000; box-shadow:0 5px 15px rgba(0,0,0,0.5); width: 280px;">
     <p style="margin: 0 0 10px 0; font-size: 13px; text-align: center; color:#fff; font-weight:bold;" id="modalTitle">Edit Marker</p>
     
@@ -466,11 +481,28 @@
     </div>
 </div>
 
-<!-- Container za prikaz slike u punoj veličini -->
 <div id="fullImageModal" onclick="closeFullImage()" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:2000; justify-content:center; align-items:center; cursor:pointer;">
     <img id="fullImageElement" style="max-width:90vw; max-height:90vh; border-radius:6px; box-shadow:0 0 20px rgba(0,0,0,0.8);">
 </div>
 
+<div id="exportModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:3000; justify-content:center; align-items:center;">
+    <div style="background:#222; padding:20px; border:2px solid var(--accent); border-radius:8px; width: 320px; box-shadow:0 5px 15px rgba(0,0,0,0.5);">
+        <p style="margin: 0 0 15px 0; font-size: 15px; text-align: center; color:#fff; font-weight:bold;">Export Screenshot Options</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px; color: #ddd;">
+            <label><input type="checkbox" id="chkMap" checked> Include Map</label>
+            <label><input type="checkbox" id="chkMarkers" checked> Include Markers on Map</label>
+            <label><input type="checkbox" id="chkCards" checked> Include Fish Cards</label>
+            <label><input type="checkbox" id="chkCardInfo" checked> Include Fish Stats (Size, Speed, Minigame)</label>
+            <label><input type="checkbox" id="chkMarkerInfo" checked> Include Marker Info / Notes</label>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button onclick="generateExportImage()" style="flex: 1; background: var(--accent); color: white; padding: 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Generate & Download</button>
+            <button onclick="closeExportModal()" style="background: #444; color: white; padding: 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Cancel</button>
+        </div>
+    </div>
+</div>
 
 <script>
     const SUPABASE_URL = 'https://qkdijflbuvsztoaxaljt.supabase.co'; 
@@ -494,7 +526,7 @@
             const response = await fetch('data.json');
             const data = await response.json();
             MAPS = data.maps;
-            FISH_DB = data.fishes; // Očekuje se da je u data.json fishes: [...]
+            FISH_DB = data.fishes;
             SETS = data.sets;
             initMapSelector();
         } catch (error) {
@@ -603,7 +635,6 @@
                 continue;
             }
 
-            // --- Shadow Size generiranje (SVG) ---
             let sizeHtml = '';
             if (fish.shadowSize && Array.isArray(fish.shadowSize) && fish.shadowSize.length > 0) {
                 for (let s = 1; s <= 5; s++) {
@@ -615,7 +646,6 @@
                 }
             }
 
-            // --- Shadow Speed generiranje ---
             let speedSymbols = ['❚❚', '▶', '▶▶'];
             let speedHtml = '';
             if (fish.shadowSpeed && Array.isArray(fish.shadowSpeed) && fish.shadowSpeed.length > 0) {
@@ -625,7 +655,6 @@
                 }
             }
 
-            // --- Activity Badge generiranje (samo ako je eksplicitno 'day' ili 'night') ---
             let activityBadgeHtml = '';
             if (fish.activity === 'day') {
                 activityBadgeHtml = `
@@ -640,6 +669,18 @@
                         <div class="activity-badge-exclamation">!</div>
                     </div>`;
             }
+
+            let rarity = fish.rarity ? fish.rarity.toLowerCase() : 'common';
+            if (rarity !== 'rare' && rarity !== 'epic') {
+                rarity = 'common';
+            }
+            
+            let fishName = fish.name || 'Unknown Fish';
+            let fishHeaderTopHtml = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 14px; font-weight: bold; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${fishName}</span>
+                    <div class="fish-rarity-badge rarity-${rarity}">${rarity}</div>
+                </div>`;
 
             const sizeBlock = (fish.shadowSize && Array.isArray(fish.shadowSize) && fish.shadowSize.length > 0) ? `
                 <div class="stats-row">
@@ -661,11 +702,23 @@
                     <div style="font-size: 11px; color: #666; font-style: italic; margin-top: 2px;">no shadow</div>
                 </div>`;
 
+            let minigameHtml = '';
+            if (fish.minigame) {
+                minigameHtml = `
+                    <div class="minigame-preview active style-${fish.minigame}">
+                        <div class="mg-track">
+                            <div class="mg-box"></div>
+                        </div>
+                    </div>`;
+            }
+
             const card = document.createElement('div');
             card.className = 'fish-card';
             card.id = `card-${fish.id}`;
+            card.dataset.fishId = fish.id; 
             
             card.innerHTML = `
+                ${fishHeaderTopHtml}
                 <div class="fish-header">
                     <div class="fish-avatar-wrapper" style="background: ${fish.bg || '#88ccf1'};">
                         <img src="${fish.img}" alt="${fish.name}">
@@ -675,7 +728,9 @@
                 <div class="fish-stats">
                     ${sizeBlock}
                     ${speedBlock}
+                    ${minigameHtml}
                 </div>
+                <div class="card-marker-info" style="display:none; font-size: 11px; color: #e8dfc1; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 4px; border-left: 2px solid var(--accent); margin-top: 4px;"></div>
             `;
 
             card.onclick = () => activateFish(fish);
@@ -799,7 +854,6 @@
             el.style.top = m.y + '%';
             el.style.backgroundImage = `url(${fish.img})`;
             
-            // Dodaje mali "i" u rub ako marker ima upisan info ili sliku
             if (m.info || m.ingame_img) {
                 const badge = document.createElement('div');
                 badge.className = 'marker-info-badge';
@@ -903,17 +957,13 @@
 
     loadData();
 
-
     let activeEditingMarkerId = null;
     let currentMarkerObj = null;
     let removeImageFlag = false;
 
-    // Sluša klikove po cijelom dokumentu da zatvori modal ako se klikne izvan njega
     document.addEventListener('click', function(event) {
         const modal = document.getElementById('editMarkerModal');
-        
         if (modal.style.display === 'block' && !modal.contains(event.target)) {
-            // Provjeri da klik nije bio na samom markeru (koji ponovno otvara modal)
             if (!event.target.closest('.marker')) {
                 closeEditModal();
             }
@@ -921,7 +971,6 @@
     });
 
     function openEditModal(markerObj, event) {
-        // Ako nije admin, a marker nema ni info ni sliku - uopće nemoj otvarati modal
         if (!isAdmin && !markerObj.info && !markerObj.ingame_img) {
             return;
         }
@@ -1050,6 +1099,247 @@
         }
     };
 
+    window.openExportModal = function() {
+        document.getElementById('exportModal').style.display = 'flex';
+    };
+
+    window.closeExportModal = function() {
+        document.getElementById('exportModal').style.display = 'none';
+    };
+
+    window.generateExportImage = async function() {
+        const includeMap = document.getElementById('chkMap').checked;
+        const includeMarkers = document.getElementById('chkMarkers').checked;
+        const includeCards = document.getElementById('chkCards').checked;
+        const includeCardInfo = document.getElementById('chkCardInfo').checked;
+        const includeMarkerInfo = document.getElementById('chkMarkerInfo').checked;
+
+        closeExportModal();
+
+        const targetElement = document.querySelector('.stage');
+        if (!targetElement) return;
+
+        const mapWrapper = document.getElementById('mapWrapper');
+        const mainMap = document.getElementById('mainMap');
+        const markersLayer = document.getElementById('markersLayer');
+        const fishColumns = document.querySelectorAll('.fish-column');
+        const fishStatsElements = document.querySelectorAll('.fish-stats');
+        const sidebar = document.getElementById('setsPanel');
+
+        sidebar.classList.add('export-hidden');
+
+        if (!includeMap) mapWrapper.classList.add('export-hidden');
+        if (!includeMarkers) markersLayer.classList.add('export-hidden');
+        if (!includeCards) fishColumns.forEach(col => col.classList.add('export-hidden'));
+        if (!includeCardInfo) fishStatsElements.forEach(stats => stats.classList.add('export-hidden'));
+
+        const originalTargetStyles = {
+            width: targetElement.style.width,
+            height: targetElement.style.height,
+            position: targetElement.style.position,
+            display: targetElement.style.display,
+            alignItems: targetElement.style.alignItems,
+            justifyContent: targetElement.style.justifyContent,
+            gap: targetElement.style.gap,
+            padding: targetElement.style.padding,
+            boxSizing: targetElement.style.boxSizing
+        };
+
+        const originalMapHeight = mainMap ? mainMap.style.height : '';
+
+        const fixedMapHeight = 1024;
+        const fixedCardWidth = 340;
+        const fixedCardHeight = 507; 
+
+        if (mainMap) {
+            mainMap.style.maxHeight = `${fixedMapHeight}px`;
+            mainMap.style.height = `${fixedMapHeight}px`;
+            mainMap.style.width = `${fixedMapHeight}px`;
+        }
+
+        targetElement.style.width = 'max-content';
+        targetElement.style.height = `${fixedMapHeight + 100}px`;
+        targetElement.style.position = 'relative';
+        targetElement.style.display = 'flex';
+        targetElement.style.alignItems = 'center';
+        targetElement.style.justifyContent = 'center';
+        targetElement.style.gap = '30px';
+        targetElement.style.padding = '50px 300px';
+        targetElement.style.boxSizing = 'border-box';
+
+        let modifiedMinigames = [];
+
+        fishColumns.forEach(col => {
+            col.style.width = `${fixedCardWidth}px`;
+            col.style.height = `${fixedMapHeight}px`;
+            col.style.display = 'flex';
+            col.style.flexDirection = 'column';
+            col.style.justifyContent = 'space-between';
+            col.style.gap = '10px';
+
+            col.querySelectorAll('.fish-card').forEach(card => {
+                card.style.width = `${fixedCardWidth}px`;
+                card.style.height = `${fixedCardHeight}px`;
+                card.style.maxHeight = `${fixedCardHeight}px`;
+                card.style.minHeight = `${fixedCardHeight}px`;
+                card.style.boxSizing = 'border-box';
+                card.style.overflow = 'hidden';
+                card.style.padding = '14px 16px';
+                card.style.gap = '10px';
+                card.style.position = 'relative';
+
+                const minigameEl = card.querySelector('.minigame-preview'); 
+                if (minigameEl) {
+                    const className = minigameEl.className || '';
+                    const isMoving = className.includes('moving');
+                    
+                    if (isMoving) {
+                        modifiedMinigames.push({ element: minigameEl, originalHTML: minigameEl.innerHTML });
+                        
+                        const mgBox = minigameEl.querySelector('.mg-box');
+                        if (mgBox) {
+                            mgBox.style.animation = 'none';
+                            mgBox.style.display = 'flex';
+                            mgBox.style.alignItems = 'center';
+                            mgBox.style.justifyContent = 'center';
+                            mgBox.style.fontSize = '12px';
+                            mgBox.style.fontWeight = 'bold';
+                            mgBox.style.color = '#ff4d4d';
+                            mgBox.innerText = 'M';
+
+                            if (className.includes('big')) {
+                                mgBox.style.width = '56px';
+                                mgBox.style.left = '35%';
+                            } else {
+                                mgBox.style.width = '36px';
+                                mgBox.style.left = '25%';
+                            }
+                            mgBox.style.right = 'auto';
+                        }
+                    }
+                }
+            });
+        });
+
+        await new Promise(resolve => setTimeout(resolve, 50));
+
+        let markersData = [];
+        let modifiedMarkers = []; 
+
+        if (currentMap) {
+            let query = db.from('markers').select('*').eq('map_id', currentMap.id);
+            if (currentSet) {
+                query = query.in('fish_id', currentSet.fishes);
+            }
+            const res = await query;
+            markersData = res.data || [];
+
+            if (includeMarkerInfo) {
+                let globalIndex = 1; // Globalni brojač za cijelu mapu
+
+                markersData.forEach((m, idx) => {
+                    if (m.info && m.info.trim() !== '') {
+                        const cardEl = document.querySelector(`.fish-card[data-fish-id="${m.fish_id}"]`);
+                        const renderedMarkers = markersLayer.querySelectorAll('.marker');
+                        const markerEl = renderedMarkers[idx];
+
+                        let currentIdx = globalIndex++; // Povećava se za svaki sljedeći marker s info-om
+
+                        if (cardEl) {
+                            const infoBox = cardEl.querySelector('.card-marker-info');
+                            if (infoBox) {
+                                infoBox.style.display = 'block';
+                                infoBox.innerHTML += `<div style="margin-bottom: 4px;"><strong>[${currentIdx}]</strong> ${m.info}</div>`;
+                            }
+                        }
+
+                        if (markerEl) {
+                            modifiedMarkers.push({ element: markerEl, originalHTML: markerEl.innerHTML });
+                            markerEl.style.position = 'relative';
+                            
+                            const exclamationEl = markerEl.querySelector('span, div');
+                            if (exclamationEl) {
+                                exclamationEl.innerText = currentIdx;
+                            } else {
+                                markerEl.innerText = currentIdx;
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        try {
+            const canvas = await html2canvas(targetElement, {
+                useCORS: true,
+                scale: 2,
+                windowWidth: 1920,
+                windowHeight: 1080,
+                backgroundColor: '#222222'
+            });
+
+            const link = document.createElement('a');
+            link.download = `deep-maps-export-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } catch (error) {
+            console.error("Error generating screenshot:", error);
+            alert("Došlo je do greške prilikom generiranja slike.");
+        } finally {
+            modifiedMinigames.forEach(item => {
+                item.element.innerHTML = item.originalHTML;
+            });
+
+            modifiedMarkers.forEach(item => {
+                item.element.innerHTML = item.originalHTML;
+            });
+
+            Object.keys(originalTargetStyles).forEach(key => {
+                targetElement.style[key] = originalTargetStyles[key];
+            });
+
+            if (mainMap) {
+                mainMap.style.maxHeight = '';
+                mainMap.style.height = originalMapHeight;
+                mainMap.style.width = '';
+            }
+
+            fishColumns.forEach(col => {
+                col.style.width = '';
+                col.style.height = '';
+                col.style.display = '';
+                col.style.flexDirection = '';
+                col.style.justifyContent = '';
+
+                col.querySelectorAll('.fish-card').forEach(card => {
+                    card.style.width = '';
+                    card.style.height = '';
+                    card.style.maxHeight = '';
+                    card.style.minHeight = '';
+                    card.style.boxSizing = '';
+                    card.style.overflow = '';
+                    card.style.padding = '';
+                    card.style.gap = '';
+                    card.style.position = '';
+                });
+            });
+
+            sidebar.classList.remove('export-hidden');
+            mapWrapper.classList.remove('export-hidden');
+            markersLayer.classList.remove('export-hidden');
+            fishColumns.forEach(col => col.classList.remove('export-hidden'));
+            fishStatsElements.forEach(stats => stats.classList.remove('export-hidden'));
+            
+            document.querySelectorAll('.card-marker-info').forEach(box => {
+                box.style.display = 'none';
+                box.innerText = '';
+            });
+        }
+    };
+
+    
 </script>
 </body>
 </html>
