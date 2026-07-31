@@ -57,7 +57,20 @@
     { "id": "f_Barracuda", "name": "Barracuda", "img": "images/fishes/fish_Barracuda_mini.png", "shadowSize": [2], "shadowSpeed": [2] },
     { "id": "f_BlueMarlin", "name": "Blue Marlin", "img": "images/fishes/fish_BlueMarlin_mini.png", "minigame": "mini_moving", "rarity": "rare", "oos": [1, 2, 3, 12] },
     { "id": "f_Pompano", "name": "Pompano", "img": "images/fishes/fish_Pompano_mini.png", "shadowSize": [1], "shadowSpeed": [1] },
-    { "id": "f_Snook", "name": "Snook", "img": "images/fishes/fish_Snook_mini.png", "shadowSize": [2], "shadowSpeed": [2, 3], "oos": [1, 2, 3, 4, 10, 11, 12] }
+    { "id": "f_Snook", "name": "Snook", "img": "images/fishes/fish_Snook_mini.png", "shadowSize": [2], "shadowSpeed": [2, 3], "oos": [1, 2, 3, 4, 10, 11, 12] },
+
+    { "id": "f_ArcticChar", "name": "Arctic Char", "img": "images/fishes/fish_ArcticChar_mini.png", "shadowSize": [3, 4], "shadowSpeed": [3], "oos": [1, 2, 3, 4, 12] },
+    { "id": "f_DollyVarden", "name": "Dolly Varden", "img": "images/fishes/fish_DollyVarden_mini.png", "shadowSize": [3, 4], "shadowSpeed": [1] },
+    { "id": "f_RougheyeRockfish", "name": "Rougheye Rockfish", "img": "images/fishes/fish_RougheyeRockfish_mini.png", "shadowSize": [1], "shadowSpeed": [1] },
+    { "id": "f_SpinySkate", "name": "Spiny Skate", "img": "images/fishes/fish_SpinySkate_mini.png", "shadowSize": [3], "shadowSpeed": [1, 2], "minigame": "mini_static", "rarity": "rare" },
+    { "id": "f_Coalfish", "name": "Coalfish", "img": "images/fishes/fish_Coalfish_mini.png", "shadowSize": [3, 4], "shadowSpeed": [1], "minigame": "mini_static", "oos": [1, 2, 11, 12] },
+    { "id": "f_Steelhead", "name": "Steelhead", "img": "images/fishes/fish_Steelhead_mini.png", "shadowSize": [3, 4], "shadowSpeed": [2], "oos": [5, 6, 7, 8] },
+    { "id": "f_HumpbackSalmon", "name": "Humpback Salmon", "img": "images/fishes/fish_HumpbackSalmon_mini.png", "shadowSize": [1], "shadowSpeed": [3], "oos": [1, 11, 12] },
+    { "id": "f_Halibut", "name": "Halibut", "img": "images/fishes/fish_Halibut_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1], "minigame": "mini_static", "rarity": "rare" },
+    { "id": "f_ChumSalmon", "name": "Chum Salmon", "img": "images/fishes/fish_ChumSalmon_mini.png", "shadowSize": [3, 4], "shadowSpeed": [2], "activity": "day", "oos": [1, 2, 3, 4, 12] },
+    { "id": "f_SilverSalmon", "name": "Silver Salmon", "img": "images/fishes/fish_SilverSalmon_mini.png", "shadowSize": [3, 4], "shadowSpeed": [2], "oos": [1, 2, 3, 12] },
+    { "id": "f_Lancetfish", "name": "Lancetfish", "img": "images/fishes/fish_Lancetfish_mini.png", "shadowSize": [1], "shadowSpeed": [3], "activity": "night" },
+    { "id": "f_BlueLingcod", "name": "Blue Lingcod", "img": "images/fishes/fish_BlueLingcod_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1, 2], "activity": "day", "minigame": "mini_static", "rarity": "rare", "oos": [1, 2, 11, 12] }
 
 
   ],
@@ -78,7 +91,11 @@
 
     { "id": "set7", "map_id": "map3", "name": "Set 1", "fishes": ["f_Barracuda", "f_BlueMarlin", "f_Pompano", "f_Snook"] },
     { "id": "set8", "map_id": "map3", "name": "Set 2", "fishes": ["f_Dorado", "f_Roosterfish", "f_Tarpon", "f_YellowfinTuna"] },
-    { "id": "set9", "map_id": "map3", "name": "Set 3", "fishes": ["f_BroomtailGrouper", "f_PacificSailfish", "f_JackCrevalle", "f_StripedMarlin"] }
+    { "id": "set9", "map_id": "map3", "name": "Set 3", "fishes": ["f_BroomtailGrouper", "f_PacificSailfish", "f_JackCrevalle", "f_StripedMarlin"] },
+
+    { "id": "set10", "map_id": "map4", "name": "Set 1", "fishes": ["f_ArcticChar", "f_DollyVarden", "f_RougheyeRockfish", "f_SpinySkate"] },
+    { "id": "set11", "map_id": "map4", "name": "Set 2", "fishes": ["f_Coalfish", "f_Steelhead", "f_HumpbackSalmon", "f_Halibut"] },
+    { "id": "set12", "map_id": "map4", "name": "Set 3", "fishes": ["f_ChumSalmon", "f_SilverSalmon", "f_Lancetfish", "f_BlueLingcod"] }
     
   ]
 }
