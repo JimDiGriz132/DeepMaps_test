@@ -11,6 +11,7 @@
             --panel: #2d2d2d; 
             --accent: #5a9bd4; 
             --text: #e0e0e0;
+            --marker-size: 40px;
         }
         
         body { 
@@ -67,13 +68,17 @@
         }
         
         #adminBtn { 
-            padding: 10px; 
+            padding: 10px 4px; 
             background: #444; 
             color: white; 
             border: none; 
             cursor: pointer; 
             font-weight: bold;
+            font-size: 11px;
             border-radius: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         #adminBtn.on { background: #d32f2f; }
 
@@ -87,6 +92,27 @@
             font-size: 11px;
             color: #ccc;
             gap: 4px;
+        }
+        .marker-mode-container .marker-size-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .marker-mode-container .marker-size-row .ctrl-label {
+            flex-shrink: 0;
+        }
+        .marker-mode-container input[type="range"] {
+            flex: 1;
+            accent-color: var(--accent);
+            cursor: pointer;
+            height: 12px;
+        }
+        .marker-mode-container input[type="range"] {
+            flex: 1;
+            min-width: 0;
+            accent-color: var(--accent);
+            cursor: pointer;
+            height: 12px;
         }
 
         /* Triple Toggle Slider Styles */
@@ -123,6 +149,14 @@
             border-radius: 3px;
             transition: left 0.2s ease-in-out;
             z-index: 1;
+        }
+
+        .admin-controls-row {
+            display: flex;
+            gap: 5px;
+        }
+        .admin-controls-row > * {
+            flex: 1;
         }
 
         .main-layout { 
@@ -344,7 +378,7 @@
         
         .marker {
             position: absolute;
-            width: 40px; height: 40px;
+            width: var(--marker-size); height: var(--marker-size);
             border-radius: 50%;
             transform: translate(-50%, -50%);
             background-size: cover;
@@ -484,10 +518,15 @@
 <div class="top-bar">
     <div class="map-selector" id="mapSelector"></div>
     <div class="admin-controls">
-        <button id="adminBtn" onclick="toggleAdmin()">Admin Mode: OFF</button>
-        <button id="exportModalBtn" onclick="openExportModal()" style="padding: 8px; background: #2e7d32; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; font-size: 11px;">Export Image</button>
+        <div class="admin-controls-row">
+            <button id="adminBtn" onclick="toggleAdmin()">Admin: OFF</button>
+            <button id="exportModalBtn" onclick="openExportModal()" style="padding: 10px; background: #2e7d32; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; font-size: 11px;">Export Image</button>
+        </div>
         <div class="marker-mode-container">
-            <span>Marker Style</span>
+            <div class="marker-size-row">
+                <span class="ctrl-label">Size</span>
+                <input type="range" id="markerSizeSlider" min="16" max="80" step="1" value="40" oninput="updateMarkerSize(this.value)">
+            </div>
             <div class="triple-toggle" id="tripleToggle" onclick="cycleMarkerMode(event)">
                 <div class="triple-slider-bg" id="tripleSliderBg" style="left: 0%;"></div>
                 <div class="triple-toggle-option active" data-val="0">Fish</div>
@@ -524,6 +563,7 @@
     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
         <label style="font-size: 11px; color: #aaa;">Color:</label>
         <input type="color" id="modalColorPicker" value="#ff4d4d" style="width: 100%; height: 30px; border: none; background: none; cursor: pointer;">
+        <button type="button" onclick="pickColorFromScreen('modalColorPicker')" title="Odaberi boju s ekrana" style="flex-shrink:0; width: 30px; height: 30px; padding:0; background:#333; border:1px solid #555; border-radius:4px; cursor:pointer; font-size:14px;">💧</button>
     </div>
     <div style="display: flex; flex-direction: column; gap: 4px;">
         <button class="btn-gold" onclick="saveMarker('Gold')">Gold</button>
@@ -539,8 +579,13 @@
     <p style="margin: 0 0 10px 0; font-size: 13px; text-align: center; color:#fff; font-weight:bold;" id="modalTitle">Edit Marker</p>
     
     <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div id="colorFieldContainer" style="display: flex; flex-direction: column; gap: 8px;">
         <label style="font-size: 11px; color: #aaa;">Marker Color:</label>
-        <input type="color" id="editMarkerColorInput" style="width: 100%; height: 30px; border: none; background: none; cursor: pointer;">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <input type="color" id="editMarkerColorInput" style="width: 100%; height: 30px; border: none; background: none; cursor: pointer;">
+            <button type="button" onclick="pickColorFromScreen('editMarkerColorInput')" title="Odaberi boju s ekrana" style="flex-shrink:0; width: 30px; height: 30px; padding:0; background:#333; border:1px solid #555; border-radius:4px; cursor:pointer; font-size:14px;">💧</button>
+        </div>
+    </div>
 
         <label style="font-size: 11px; color: #aaa;">Info / Note:</label>
         <input type="text" id="markerInfoInput" style="padding: 6px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; font-size: 12px;" placeholder="Enter info...">
@@ -602,6 +647,7 @@
     let SETS = [];
 
     let currentMap = null;
+    let fishColorMap = {};    
     let currentSet = null;
     let selectedFish = null;
     let pendingMarkerData = null;
@@ -609,6 +655,153 @@
     let markerModeState = 0; // 0 = Fish, 1 = Color+Fish, 2 = Color
 
     const ADMIN_PASSWORD = "admin123"; 
+
+    window.updateMarkerSize = function(size) {
+        document.documentElement.style.setProperty('--marker-size', size + 'px');
+    };
+
+    window.pickColorFromScreen = async function(inputId) {
+            if (window.EyeDropper) {
+                try {
+                    const eyeDropper = new EyeDropper();
+                    const result = await eyeDropper.open();
+                    applyPickedColor(inputId, result.sRGBHex);
+                } catch (err) {
+                    // korisnik otkazao - ignoriraj
+                }
+                return;
+            }
+            // Fallback za Firefox i ostale preglednike bez EyeDropper API-ja
+            pickColorFromScreenFallback(inputId);
+        };
+
+        function applyPickedColor(inputId, hex) {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.value = hex;
+                input.dispatchEvent(new Event('input'));
+                input.dispatchEvent(new Event('change'));
+            }
+        }
+
+        window.pickColorFromScreenFallback = async function(inputId) {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+                alert('Tvoj preglednik ne podržava biranje boje s ekrana.');
+                return;
+            }
+
+            let stream;
+            try {
+                stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            } catch (err) {
+                return; // korisnik odbio dijeljenje ekrana
+            }
+
+            try {
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.muted = true;
+                video.playsInline = true;
+                video.style.cssText = 'position:fixed; top:-9999px; left:-9999px;';
+                document.body.appendChild(video);
+
+                await video.play();
+
+                // Pričekaj da video stvarno ima dekodirani frame (ne samo metapodatke)
+                await new Promise((resolve, reject) => {
+                    let settled = false;
+                    const check = () => {
+                        if (settled) return;
+                        if (video.videoWidth > 0 && video.videoHeight > 0) {
+                            settled = true;
+                            resolve();
+                        }
+                    };
+                    if (video.requestVideoFrameCallback) {
+                        video.requestVideoFrameCallback(() => { settled = true; resolve(); });
+                    } else {
+                        video.onloadeddata = check;
+                        check();
+                    }
+                    setTimeout(() => {
+                        if (!settled) { settled = true; reject(new Error('Video se nije učitao na vrijeme.')); }
+                    }, 4000);
+                });
+
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0);
+
+                stream.getTracks().forEach(track => track.stop());
+                document.body.removeChild(video);
+
+                let imageData;
+                try {
+                    imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                } catch (e) {
+                    alert('Nije moguće očitati boju s ekrana (blokirano od preglednika).');
+                    return;
+                }
+
+                openEyedropperOverlay(canvas, imageData, inputId);
+            } catch (err) {
+                console.error('Eyedropper fallback error:', err);
+                alert('Greška pri hvatanju ekrana: ' + err.message);
+                stream.getTracks().forEach(track => track.stop());
+            }
+        };
+
+        window.openEyedropperOverlay = function(canvas, imageData, inputId) {
+            const overlay = document.createElement('div');
+            overlay.className = 'eyedropper-overlay';
+            overlay.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.85); z-index:5000; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px;';
+
+            const hint = document.createElement('div');
+            hint.innerText = 'Klikni bilo gdje na snimku da odabereš boju (Esc za otkazivanje)';
+            hint.style.cssText = 'color:#fff; font-size:13px; font-weight:bold;';
+
+            const displayCanvas = document.createElement('canvas');
+            const maxW = window.innerWidth * 0.85;
+            const maxH = window.innerHeight * 0.8;
+            const scale = Math.min(maxW / canvas.width, maxH / canvas.height, 1);
+            displayCanvas.width = canvas.width * scale;
+            displayCanvas.height = canvas.height * scale;
+            displayCanvas.style.cssText = 'cursor: crosshair; border: 2px solid var(--accent); border-radius: 6px; max-width: 100%; max-height: 100%;';
+            const dctx = displayCanvas.getContext('2d');
+            dctx.drawImage(canvas, 0, 0, displayCanvas.width, displayCanvas.height);
+
+            function cleanup() {
+                if (overlay.parentNode) document.body.removeChild(overlay);
+                document.removeEventListener('keydown', escHandler);
+            }
+
+            displayCanvas.onclick = function(e) {
+                e.stopPropagation();
+                const rect = displayCanvas.getBoundingClientRect();
+                const x = Math.floor((e.clientX - rect.left) / scale);
+                const y = Math.floor((e.clientY - rect.top) / scale);
+                const idx = (y * imageData.width + x) * 4;
+                const r = imageData.data[idx];
+                const g = imageData.data[idx + 1];
+                const b = imageData.data[idx + 2];
+                const hex = '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+
+                console.log('Eyedropper picked color:', hex, 'for input:', inputId);
+                applyPickedColor(inputId, hex);
+                cleanup();
+            };
+
+            const escHandler = function(e) {
+                if (e.key === 'Escape') cleanup();
+            };
+            document.addEventListener('keydown', escHandler);
+
+            overlay.appendChild(hint);
+            overlay.appendChild(displayCanvas);
+            document.body.appendChild(overlay);
+        };
 
     window.cycleMarkerMode = function(event) {
         const toggleEl = document.getElementById('tripleToggle');
@@ -670,7 +863,7 @@
             isAdmin = false;
             document.getElementById('adminBtn').classList.remove('on');
         }
-        document.getElementById('adminBtn').innerText = 'Admin Mode: ' + (isAdmin ? 'ON' : 'OFF');
+        document.getElementById('adminBtn').innerText = 'Admin: ' + (isAdmin ? 'ON' : 'OFF');
         updateMapCursor();
         fetchAndDrawMarkers();
     };
@@ -943,6 +1136,17 @@
         if (error) {
             alert("Error saving to base!");
             console.error(error);
+            return;
+        }
+
+        // Propagiraj boju na ostale markere iste ribe na ovoj mapi
+        const { error: colorError } = await db.from('markers')
+            .update({ color: pendingMarkerData.color })
+            .eq('fish_id', pendingMarkerData.fish_id)
+            .eq('map_id', pendingMarkerData.map_id);
+
+        if (colorError) {
+            console.error(colorError);
         }
         
         closeQualityModal();
@@ -975,7 +1179,7 @@
             return;
         }
 
-        let fishColorMap = {};
+        fishColorMap = {};
         if (data && Array.isArray(data)) {
             data.forEach(m => {
                 if (m && m.color && m.fish_id) {
@@ -1146,12 +1350,13 @@
     let removeImageFlag = false;
 
     document.addEventListener('click', function(event) {
+        if (event.target.closest('.eyedropper-overlay')) return; // ne zatvaraj modal zbog pipete
         const modal = document.getElementById('editMarkerModal');
         if (modal.style.display === 'block' && !modal.contains(event.target)) {
             if (!event.target.closest('.marker')) {
                 closeEditModal();
             }
-        }
+            }
     });
 
     function openEditModal(markerObj, event) {
@@ -1171,7 +1376,9 @@
         const modalTitle = document.getElementById('modalTitle');
 
         infoInput.value = markerObj.info || '';
-        colorInput.value = markerObj.color || '#5a9bd4';
+        const editFish = typeof FISH_DB !== 'undefined' ? FISH_DB.find(f => f.id === markerObj.fish_id) : null;
+        const effectiveColor = markerObj.color || fishColorMap[markerObj.fish_id] || (editFish && editFish.color) || '#5a9bd4';
+        colorInput.value = effectiveColor;
         fileInput.value = '';
 
         if (markerObj.ingame_img) {
@@ -1181,10 +1388,13 @@
             previewContainer.style.display = 'none';
         }
 
+        const colorFieldContainer = document.getElementById('colorFieldContainer');
+
         if (!isAdmin) {
             modalTitle.innerText = "Marker Info";
             infoInput.disabled = true;
             colorInput.disabled = true;
+            colorFieldContainer.style.display = 'none';
             fileInput.style.display = 'none';
             saveBtn.style.display = 'none';
             deleteBtn.style.display = 'none';
@@ -1195,6 +1405,7 @@
             modalTitle.innerText = "Edit Marker";
             infoInput.disabled = false;
             colorInput.disabled = false;
+            colorFieldContainer.style.display = 'flex';
             fileInput.style.display = 'block';
             saveBtn.style.display = 'block';
             deleteBtn.style.display = 'block';
@@ -1283,17 +1494,31 @@
             imageUrl = publicUrlData.publicUrl;
         }
 
-        const { error } = await db.from('markers')
-            .update({ info: newInfo, color: newColor, ingame_img: imageUrl })
+        // Info i slika vežu se samo uz ovaj konkretan marker
+        const { error: infoError } = await db.from('markers')
+            .update({ info: newInfo, ingame_img: imageUrl })
             .eq('id', activeEditingMarkerId);
 
-        if (error) {
+        if (infoError) {
             alert("Error saving to database!");
-            console.error(error);
-        } else {
-            closeEditModal();
-            fetchAndDrawMarkers();
+            console.error(infoError);
+            return;
         }
+
+        // Boja se propagira na sve markere iste ribe na ovoj mapi
+        const { error: colorError } = await db.from('markers')
+            .update({ color: newColor })
+            .eq('fish_id', currentMarkerObj.fish_id)
+            .eq('map_id', currentMap.id);
+
+        if (colorError) {
+            alert("Error saving color to database!");
+            console.error(colorError);
+            return;
+        }
+
+        closeEditModal();
+        fetchAndDrawMarkers();
     };
 
     window.deleteActiveMarker = async function() {

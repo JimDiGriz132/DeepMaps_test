@@ -69,9 +69,39 @@
     { "id": "f_Halibut", "name": "Halibut", "img": "images/fishes/fish_Halibut_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1], "minigame": "mini_static", "rarity": "rare" },
     { "id": "f_ChumSalmon", "name": "Chum Salmon", "img": "images/fishes/fish_ChumSalmon_mini.png", "shadowSize": [3, 4], "shadowSpeed": [2], "activity": "day", "oos": [1, 2, 3, 4, 12] },
     { "id": "f_SilverSalmon", "name": "Silver Salmon", "img": "images/fishes/fish_SilverSalmon_mini.png", "shadowSize": [3, 4], "shadowSpeed": [2], "oos": [1, 2, 3, 12] },
-    { "id": "f_Lancetfish", "name": "Lancetfish", "img": "images/fishes/fish_Lancetfish_mini.png", "shadowSize": [1], "shadowSpeed": [3], "activity": "night" },
-    { "id": "f_BlueLingcod", "name": "Blue Lingcod", "img": "images/fishes/fish_BlueLingcod_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1, 2], "activity": "day", "minigame": "mini_static", "rarity": "rare", "oos": [1, 2, 11, 12] }
+    { "id": "f_Lancetfish", "name": "Lancetfish", "img": "images/fishes/fish_Wolffish_mini.png", "shadowSize": [1], "shadowSpeed": [3], "activity": "night" },
+    { "id": "f_BlueLingcod", "name": "Blue Lingcod", "img": "images/fishes/fish_BlueLingcod_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1, 2], "activity": "day", "minigame": "mini_static", "rarity": "rare", "oos": [1, 2, 11, 12] },
 
+    { "id": "f_BlackSaddledCoralGrouper", "name": "Black Saddled Coral Grouper", "img": "images/fishes/fish_BlackSaddled_mini.png", "shadowSize": [3, 4], "shadowSpeed": [1]},
+    { "id": "f_Albacore", "name": "Albacore", "img": "images/fishes/fish_Albacore_mini.png", "shadowSize": [3, 4], "shadowSpeed": [3], "activity": "day", "oos": [1, 2, 3] },
+    { "id": "f_GoldenTrevally", "name": "Golden Trevally", "img": "images/fishes/fish_GoldenTrevally_mini.png", "shadowSize": [3, 4], "shadowSpeed": [1], "oos": [1, 2, 11, 12] },
+    { "id": "f_QueenslandGrouper", "name": "Queensland Grouper", "img": "images/fishes/fish_QueenslandGrouper_mini.png", "shadowSize": [5], "shadowSpeed": [3], "minigame": "big_moving", "rarity": "rare" },
+    { "id": "f_CoralTrout", "name": "Coral Trout", "img": "images/fishes/fish_CoralTrout_mini.png", "shadowSize": [3, 4], "shadowSpeed": [1], "activity": "day", "oos": [1, 2, 3, 4, 12] },
+    { "id": "f_Tailor", "name": "Tailor", "img": "images/fishes/fish_Tailor_mini.png", "shadowSize": [3, 4], "shadowSpeed": [3], "oos": [1, 7, 8, 9, 10, 11, 12] },
+    { "id": "f_Barramundi", "name": "Barramundi", "img": "images/fishes/fish_Barramundi_mini.png", "shadowSize": [3, 4], "shadowSpeed": [1], "oos": [1, 6, 7, 8, 9, 10, 11, 12] },
+    { "id": "f_GiantTrevally", "name": "Giant Trevally", "img": "images/fishes/fish_GiantTrevally_mini.png", "shadowSize": [2, 3], "shadowSpeed": [2], "minigame": "big_static", "rarity": "rare" },
+    { "id": "f_SkipjackTuna", "name": "Skipjack Tuna", "img": "images/fishes/fish_SkipjackTuna_mini.png", "shadowSize": [3, 4], "shadowSpeed": [3], "activity": "day" },
+    { "id": "f_JohnDory", "name": "John Dory", "img": "images/fishes/fish_JohnDory_mini.png", "shadowSize": [1, 2], "shadowSpeed": [1] },
+    { "id": "f_CarpetShark", "name": "Carpet Shark", "img": "images/fishes/fish_TasselledWobbegong_mini.png", "shadowSize": [5], "shadowSpeed": [1, 2], "activity": "night" },
+    { "id": "f_Swordfish", "name": "Swordfish", "img": "images/fishes/fish_Swordfish_mini.png", "shadowSize": [2, 3], "shadowSpeed": [2, 3], "minigame": "big_moving", "rarity": "rare"},
+
+    { "id": "f_Carp", "name": "Carp", "img": "images/fishes/fish_CommonCarp_mini.png", "shadowSize": [5], "shadowSpeed": [1]},
+    { "id": "f_FreshwaterBream", "name": "Freshwater Bream", "img": "images/fishes/fish_FreshwaterBream_mini.png", "shadowSize": [1], "shadowSpeed": [1], "oos": [1, 2, 10, 11, 12] },
+    { "id": "f_RainbowTrout", "name": "Rainbow Trout", "img": "images/fishes/fish_RainbowTrout_mini.png", "shadowSize": [3, 4], "shadowSpeed": [2, 3], "oos": [5, 6, 7, 8] },
+    { "id": "f_EuropeanWhitefish", "name": "European Whitefish", "img": "images/fishes/fish_EuropeanWhitefish_mini.png", "shadowSize": [3], "shadowSpeed": [1], "minigame": "mini_static", "rarity": "rare" },
+    { "id": "f_EuropeanPerch", "name": "European Perch", "img": "images/fishes/fish_EuropeanPerch_mini.png", "shadowSize": [1, 2], "shadowSpeed": [3] },
+    { "id": "f_Tench", "name": "Tench", "img": "images/fishes/fish_Tench_mini.png", "shadowSize": [2, 3], "shadowSpeed": [1], "oos": [1, 2, 3, 10, 11, 12] },
+    { "id": "f_SeaTrout", "name": "Sea Trout", "img": "images/fishes/fish_SeaTrout_mini.png", "shadowSize": [4, 5], "shadowSpeed": [3], "oos": [1, 2, 3, 12] },
+    { "id": "f_EuropeanEel", "name": "European Eel", "img": "images/fishes/fish_EuropeanEel_mini.png", "shadowSize": [2, 3], "shadowSpeed": [2], "activity": "night", "minigame": "mini_static", "rarity": "rare", "oos": [1, 2, 3, 4, 5, 10, 11, 12] },
+
+    { "id": "f_BigheadCarp", "name": "Bighead Carp", "img": "images/fishes/fish_BigheadCarp_mini.png", "shadowSize": [5], "shadowSpeed": [3]},
+    { "id": "f_MalayanLeaffish", "name": "Malayan Leaffish", "img": "images/fishes/fish_SpotPangasius_mini.png" },
+    { "id": "f_BlackEarCatfish", "name": "Black Ear Catfish", "img": "images/fishes/fish_SpotPangasius_mini.png", "shadowSize": [1, 2], "shadowSpeed": [1], "oos": [1, 9, 10, 11, 12] },
+    { "id": "f_Wallago", "name": "European Whitefish", "img": "images/fishes/fish_EuropeanWhitefish_mini.png", "shadowSize": [3], "shadowSpeed": [3], "activity": "night" },
+    { "id": "f_Bambusa", "name": "Bambusa", "img": "images/fishes/fish_Bambusa_mini.png", "shadowSize": [2, 3], "shadowSpeed": [2], "minigame": "mini_static", "oos": [4, 5, 6, 7, 8]  },
+    { "id": "f_SpottedSorubim", "name": "Spotted Sorubim", "img": "images/fishes/fish_SpottedSorubim_mini.png", "shadowSize": [5], "shadowSpeed": [1, 2] },
+    { "id": "f_Empurau", "name": "Empurau", "img": "images/fishes/fish_ThaiMahseer_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1] },
+    { "id": "f_GreatSnakehead", "name": "Great Snakehead", "img": "images/fishes/fish_GreatSnakehead_mini.png", "shadowSize": [3, 4], "shadowSpeed": [2, 3], "minigame": "mini_static", "oos": [1, 8, 9, 10, 11, 12] }
 
   ],
 
@@ -95,7 +125,16 @@
 
     { "id": "set10", "map_id": "map4", "name": "Set 1", "fishes": ["f_ArcticChar", "f_DollyVarden", "f_RougheyeRockfish", "f_SpinySkate"] },
     { "id": "set11", "map_id": "map4", "name": "Set 2", "fishes": ["f_Coalfish", "f_Steelhead", "f_HumpbackSalmon", "f_Halibut"] },
-    { "id": "set12", "map_id": "map4", "name": "Set 3", "fishes": ["f_ChumSalmon", "f_SilverSalmon", "f_Lancetfish", "f_BlueLingcod"] }
-    
+    { "id": "set12", "map_id": "map4", "name": "Set 3", "fishes": ["f_ChumSalmon", "f_SilverSalmon", "f_Lancetfish", "f_BlueLingcod"] },
+
+    { "id": "set13", "map_id": "map5", "name": "Set 1", "fishes": ["f_BlackSaddledCoralGrouper", "f_Albacore", "f_GoldenTrevally", "f_QueenslandGrouper"] },
+    { "id": "set14", "map_id": "map5", "name": "Set 2", "fishes": ["f_CoralTrout", "f_Tailor", "f_Barramundi", "f_GiantTrevally"] },
+    { "id": "set15", "map_id": "map5", "name": "Set 3", "fishes": ["f_SkipjackTuna", "f_JohnDory", "f_CarpetShark", "f_Swordfish"] },
+
+    { "id": "set16", "map_id": "map6", "name": "Set 1", "fishes": ["f_Carp", "f_FreshwaterBream", "f_RainbowTrout", "f_EuropeanWhitefish"] },
+    { "id": "set17", "map_id": "map6", "name": "Set 2", "fishes": ["f_EuropeanPerch", "f_Tench", "f_SeaTrout", "f_EuropeanEel"] },
+
+    { "id": "set18", "map_id": "map7", "name": "Set 1", "fishes": ["f_BigheadCarp", "f_MalayanLeaffish", "f_BlackEarCatfish", "f_Wallago"] },
+    { "id": "set19", "map_id": "map7", "name": "Set 2", "fishes": ["f_Bambusa", "f_SpottedSorubim", "f_Empurau", "f_GreatSnakehead"] } 
   ]
 }
