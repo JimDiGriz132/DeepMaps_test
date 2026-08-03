@@ -1960,6 +1960,8 @@
         const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
         const fileName = `${mapObj.id}-${setObj.id}.png`;
 
+        await db.storage.from('exports').remove([fileName]); // Brisanje stare slike radi pokusaja clear cache-a
+
         const { error: upErr } = await db.storage.from('exports').upload(fileName, blob, {
             upsert: true,
             contentType: 'image/png',
