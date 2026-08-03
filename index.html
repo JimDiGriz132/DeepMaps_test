@@ -1354,7 +1354,7 @@
                 y: yPercent.toFixed(2)
             };
 
-            document.getElementById('modalColorPicker').value = '#5a9bd4';
+            document.getElementById('modalColorPicker').value = fishColorMap[selectedFish.id] || '#5a9bd4';
 
             const modal = document.getElementById('qualityModal');
             modal.style.display = 'block';
