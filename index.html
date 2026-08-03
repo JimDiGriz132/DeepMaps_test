@@ -1962,7 +1962,8 @@
 
         const { error: upErr } = await db.storage.from('exports').upload(fileName, blob, {
             upsert: true,
-            contentType: 'image/png'
+            contentType: 'image/png',
+            cacheControl: '0'
         });
         if (upErr) {
             console.error('Export upload error:', upErr);
