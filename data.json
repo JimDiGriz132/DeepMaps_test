@@ -101,7 +101,16 @@
     { "id": "f_Bambusa", "name": "Bambusa", "img": "images/fishes/fish_Bambusa_mini.png", "shadowSize": [2, 3], "shadowSpeed": [2], "minigame": "mini_static", "oos": [4, 5, 6, 7, 8]  },
     { "id": "f_SpottedSorubim", "name": "Spotted Sorubim", "img": "images/fishes/fish_SpottedSorubim_mini.png", "shadowSize": [5], "shadowSpeed": [1, 2] },
     { "id": "f_Empurau", "name": "Empurau", "img": "images/fishes/fish_ThaiMahseer_mini.png", "shadowSize": [4, 5], "shadowSpeed": [1] },
-    { "id": "f_GreatSnakehead", "name": "Great Snakehead", "img": "images/fishes/fish_GreatSnakehead_mini.png", "shadowSize": [3, 4], "shadowSpeed": [2, 3], "minigame": "mini_static", "oos": [1, 8, 9, 10, 11, 12] }
+    { "id": "f_GreatSnakehead", "name": "Great Snakehead", "img": "images/fishes/fish_GreatSnakehead_mini.png", "shadowSize": [3, 4], "shadowSpeed": [2, 3], "minigame": "mini_static", "oos": [1, 8, 9, 10, 11, 12] },
+
+    { "id": "f_FreshwaterBarracuda", "name": "Freshwater Barracuda", "img": "images/fishes/fish_FreshwaterBarracuda_mini.png" },
+    { "id": "f_GiantTrahira", "name": "Giant Trahira", "img": "images/fishes/fish_GiantTrahira_mini.png", "shadowSize": [3, 4], "shadowSpeed": [1, 2] },
+    { "id": "f_RedPiranha", "name": "Red Piranha", "img": "images/fishes/fish_RedPiranha_mini.png", "shadowSize": [1], "shadowSpeed": [3], "oos": [1, 7, 8, 9] },
+    { "id": "f_Zungaro", "name": "Zungaro", "img": "images/fishes/fish_Zungaro_mini.png", "shadowSize": [3], "shadowSpeed": [3], "minigame": "mini_static", "oos": [1, 2, 3, 4, 12] },
+    { "id": "f_AmazonPuffer", "name": "Amazon Puffer", "img": "images/fishes/fish_AmazonPuffer_mini.png" },
+    { "id": "f_Corvina", "name": "Corvina", "img": "images/fishes/fish_Corvina_mini.png", "shadowSize": [1, 2], "shadowSpeed": [1, 2], "oos": [1, 2, 9, 11, 12] },
+    { "id": "f_RockBacu", "name": "Rock Bacu", "img": "images/fishes/fish_RockBacu_mini.png", "shadowSize": [2], "shadowSpeed": [2], "minigame": "mini_static" },
+    { "id": "f_Cachama", "name": "Cachama", "img": "images/fishes/fish_Cachama_mini.png", "shadowSize": [2], "shadowSpeed": [2], "minigame": "mini_static" }
 
   ],
 
@@ -135,6 +144,10 @@
     { "id": "set17", "map_id": "map6", "name": "Set 2", "fishes": ["f_EuropeanPerch", "f_Tench", "f_SeaTrout", "f_EuropeanEel"] },
 
     { "id": "set18", "map_id": "map7", "name": "Set 1", "fishes": ["f_BigheadCarp", "f_MalayanLeaffish", "f_BlackEarCatfish", "f_Wallago"] },
-    { "id": "set19", "map_id": "map7", "name": "Set 2", "fishes": ["f_Bambusa", "f_SpottedSorubim", "f_Empurau", "f_GreatSnakehead"] } 
+    { "id": "set19", "map_id": "map7", "name": "Set 2", "fishes": ["f_Bambusa", "f_SpottedSorubim", "f_Empurau", "f_GreatSnakehead"] }, 
+
+    { "id": "set20", "map_id": "map8", "name": "Set 1", "fishes": ["f_FreshwaterBarracuda", "f_GiantTrahira", "f_RedPiranha", "f_Zungaro"] },
+    { "id": "set21", "map_id": "map8", "name": "Set 2", "fishes": ["f_AmazonPuffer", "f_Corvina", "f_RockBacu", "f_Cachama"] } 
+
   ]
 }
