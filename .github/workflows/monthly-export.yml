@@ -1,0 +1,25 @@
+name: Monthly Discord Export
+
+on:
+  schedule:
+    # 1. u mjesecu u 04:00 UTC — promijeni ovdje ako želiš drugi dan/sat
+    - cron: '0 4 1 * *'
+  workflow_dispatch: {}   # omogućuje i ručno pokretanje s GitHub UI-a (Actions tab -> Run workflow)
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm install
+
+      - run: npx playwright install --with-deps chromium
+
+      - run: npm run export
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
