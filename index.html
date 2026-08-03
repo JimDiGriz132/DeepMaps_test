@@ -5,6 +5,9 @@
     <title>Deep Maps</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { 
             --bg: #1c1c1c; 
@@ -30,7 +33,7 @@
             background: #111;
             padding: 10px;
             gap: 15px;
-            align-items: flex-start;
+            align-items: stretch;
             border-bottom: 2px solid #333;
         }
 
@@ -46,18 +49,28 @@
             cursor: pointer; 
             border: 2px solid #444; 
             border-radius: 4px;
-            height: 45px; 
             background: #222; 
             display: flex; 
+            flex-direction: column;
             align-items: center; 
             justify-content: center; 
-            font-size: 12px;
+            gap: 2px;
+            font-size: 11px;
             font-weight: bold;
             color: #ccc;
             overflow: hidden;
             transition: 0.2s;
+            padding: 4px;
+            box-sizing: border-box;
         }
-        .map-btn img { width: 100%; height: 100%; object-fit: contain; }
+        .map-btn img { flex: 1 1 0; min-height: 0; width: 100%; object-fit: contain; }
+        .map-btn .map-btn-label {
+            flex-shrink: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
         .map-btn:hover, .map-btn.active { border-color: var(--accent); background: #333; color: #fff; }
 
         .admin-controls {
@@ -76,9 +89,9 @@
             font-weight: bold;
             font-size: 11px;
             border-radius: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: normal;
+            line-height: 1.3;
+            word-break: break-word;
         }
         #adminBtn.on { background: #d32f2f; }
 
@@ -235,7 +248,8 @@
         .fish-header {
             display: flex;
             align-items: center;
-            justify-content: space-between; 
+            justify-content: flex-start;
+            gap: 15px;
             position: relative;
         }
 
@@ -253,6 +267,58 @@
             box-sizing: border-box;
         }
         .fish-avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+        .fish-name-label {
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 500;
+            font-size: 19px;
+            color: #fff;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .avatar-color-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+            box-sizing: border-box;
+        }
+
+        .dual-toggle {
+            position: relative;
+            display: flex;
+            background: #111;
+            border-radius: 4px;
+            border: 1px solid #444;
+            overflow: hidden;
+            height: 22px;
+            cursor: pointer;
+        }
+        .dual-toggle-option {
+            flex: 1;
+            text-align: center;
+            font-size: 9px;
+            font-weight: bold;
+            line-height: 22px;
+            z-index: 2;
+            color: #aaa;
+            user-select: none;
+            transition: color 0.2s;
+        }
+        .dual-toggle-option.active { color: #fff; }
+        .dual-slider-bg {
+            position: absolute;
+            top: 0; bottom: 0;
+            width: 50%;
+            background: var(--accent);
+            border-radius: 3px;
+            transition: left 0.2s ease-in-out;
+            z-index: 1;
+        }
 
         .fish-activity-badge {
             position: absolute;
@@ -519,7 +585,7 @@
     <div class="map-selector" id="mapSelector"></div>
     <div class="admin-controls">
         <div class="admin-controls-row">
-            <button id="adminBtn" onclick="toggleAdmin()">Admin: OFF</button>
+            <button id="adminBtn" onclick="toggleAdmin()" style="padding: 10px;">Admin: OFF</button>
             <button id="exportModalBtn" onclick="openExportModal()" style="padding: 10px; background: #2e7d32; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; font-size: 11px;">Export Image</button>
             <button id="autoExportBtn" onclick="openAutoExportModal()" style="display:none; padding: 10px; background: #455a64; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; font-size: 11px;">⚙ Auto Export</button>
         </div>
@@ -533,6 +599,14 @@
                 <div class="triple-toggle-option active" data-val="0">Fish</div>
                 <div class="triple-toggle-option" data-val="1">Color+Fish</div>
                 <div class="triple-toggle-option" data-val="2">Color</div>
+            </div>
+            <div class="marker-size-row">
+                <span class="ctrl-label">Color style</span>
+                <div class="dual-toggle" id="avatarColorToggle" onclick="cycleAvatarColorStyle(event)" style="flex:1;">
+                    <div class="dual-slider-bg" id="avatarColorSliderBg" style="left: 0%;"></div>
+                    <div class="dual-toggle-option active" data-val="0">Ring</div>
+                    <div class="dual-toggle-option" data-val="1">Dot</div>
+                </div>
             </div>
         </div>
     </div>
@@ -584,7 +658,7 @@
         <label style="font-size: 11px; color: #aaa;">Marker Color:</label>
         <div style="display:flex; align-items:center; gap:8px;">
             <input type="color" id="editMarkerColorInput" style="width: 100%; height: 30px; border: none; background: none; cursor: pointer;">
-            <button type="button" onclick="pickColorFromScreen('editMarkerColorInput')" title="Odaberi boju s ekrana" style="flex-shrink:0; width: 30px; height: 30px; padding:0; background:#333; border:1px solid #555; border-radius:4px; cursor:pointer; font-size:14px;">💧</button>
+            <button type="button" onclick="pickColorFromScreen('editMarkerColorInput')" title="Pick a color from the screen" style="flex-shrink:0; width: 30px; height: 30px; padding:0; background:#333; border:1px solid #555; border-radius:4px; cursor:pointer; font-size:14px;">💧</button>
         </div>
     </div>
 
@@ -650,9 +724,44 @@
             <label><input type="checkbox" id="aeChkCardInfo" checked> Include Stats (Size/Speed/Minigame/OOS)</label>
             <label><input type="checkbox" id="aeChkMarkerInfo" checked> Include Marker Info</label>
         </div>
+
+        <div style="display:flex; flex-direction:column; gap:6px; background:#1a1a1a; border:1px solid #444; border-radius:4px; padding:8px; margin-bottom:12px;">
+            <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#ddd;">
+                <span style="flex-shrink:0;">Marker size</span>
+                <input type="range" id="aeMarkerSizeSlider" min="16" max="80" step="1" value="40"
+                    oninput="document.getElementById('aeMarkerSizeVal').innerText = this.value + 'px'"
+                    style="flex:1; accent-color: var(--accent); cursor:pointer;">
+                <span id="aeMarkerSizeVal" style="flex-shrink:0; width:34px; text-align:right; color:#aaa;">40px</span>
+            </div>
+            <p style="font-size:11px; color:#777; margin:0;">This is the marker size that will be used whenever maps are exported automatically (monthly cron / Push), regardless of the size currently shown on screen.</p>
+
+            <div style="margin-top:4px;">
+                <span style="font-size:12px; color:#ddd;">Marker style</span>
+                <div class="triple-toggle" id="aeMarkerModeToggle" onclick="cycleAeMarkerMode(event)" style="margin-top:4px;">
+                    <div class="triple-slider-bg" id="aeMarkerModeSliderBg" style="left: 0%;"></div>
+                    <div class="triple-toggle-option active" data-val="0">Fish</div>
+                    <div class="triple-toggle-option" data-val="1">Color+Fish</div>
+                    <div class="triple-toggle-option" data-val="2">Color</div>
+                </div>
+            </div>
+
+            <div style="margin-top:8px;">
+                <span style="font-size:12px; color:#ddd;">Fish avatar color style</span>
+                <div class="dual-toggle" id="aeAvatarColorToggle" onclick="cycleAeAvatarColorStyle(event)" style="margin-top:4px;">
+                    <div class="dual-slider-bg" id="aeAvatarColorSliderBg" style="left: 0%;"></div>
+                    <div class="dual-toggle-option active" data-val="0">Ring</div>
+                    <div class="dual-toggle-option" data-val="1">Dot</div>
+                </div>
+            </div>
+        </div>
+
         <button onclick="saveGlobalExportOptions()" style="width:100%; margin-bottom:18px; background:var(--accent); color:white; padding:8px; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">Save options</button>
 
         <p style="font-size:12px; color:#aaa; margin-bottom:6px;">What maps/ sets to include into monthly auto-export (or what to manually push):</p>
+        <div style="display:flex; gap:8px; margin-bottom:6px;">
+            <button onclick="setAllExportTargets(true)" style="flex:1; background:#37474f; color:white; padding:5px; border:none; border-radius:3px; font-size:11px; cursor:pointer;">Select All</button>
+            <button onclick="setAllExportTargets(false)" style="flex:1; background:#37474f; color:white; padding:5px; border:none; border-radius:3px; font-size:11px; cursor:pointer;">Deselect All</button>
+        </div>
         <div id="autoExportTargetsList" style="display:flex; flex-direction:column; gap:4px; font-size:12px; color:#ccc; margin-bottom:15px; border:1px solid #444; border-radius:4px; padding:8px; max-height:180px; overflow-y:auto;"></div>
 
         <div style="display:flex; gap:10px; margin-bottom:18px;">
@@ -661,6 +770,11 @@
         </div>
 
         <p style="font-size:12px; color:#aaa; margin-bottom:6px;">Current links (copy and paste to Discord):</p>
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+            <button onclick="setAllLinkCheckboxes(true)" style="flex:1; background:#37474f; color:white; padding:5px; border:none; border-radius:3px; font-size:11px; cursor:pointer;">Select All Links</button>
+            <button onclick="setAllLinkCheckboxes(false)" style="flex:1; background:#37474f; color:white; padding:5px; border:none; border-radius:3px; font-size:11px; cursor:pointer;">Deselect All</button>
+            <button onclick="copySelectedLinks()" style="flex:1; background:#2e7d32; color:white; padding:5px; border:none; border-radius:3px; font-size:11px; cursor:pointer;">Copy Selected</button>
+        </div>
         <div id="exportLinksList" style="display:flex; flex-direction:column; gap:6px; font-size:11px; color:#ccc;"></div>
     </div>
 </div>
@@ -681,6 +795,9 @@
     let pendingMarkerData = null;
     let isAdmin = false;
     let markerModeState = 0; // 0 = Fish, 1 = Color+Fish, 2 = Color
+    let avatarColorStyle = 0; // 0 = colored ring around avatar, 1 = small color dot next to avatar
+    let aeMarkerModeState = 0; // marker style used specifically for automated/pushed exports
+    let aeAvatarColorStyleState = 0; // avatar color style used specifically for automated/pushed exports
 
     const ADMIN_PASSWORD = "admin123"; 
 
@@ -714,7 +831,7 @@
 
         window.pickColorFromScreenFallback = async function(inputId) {
             if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-                alert('Tvoj preglednik ne podržava biranje boje s ekrana.');
+                alert('Your browser does not support picking colors from the sreen.');
                 return;
             }
 
@@ -752,7 +869,7 @@
                         check();
                     }
                     setTimeout(() => {
-                        if (!settled) { settled = true; reject(new Error('Video se nije učitao na vrijeme.')); }
+                        if (!settled) { settled = true; reject(new Error('Video not loaded on time.')); }
                     }, 4000);
                 });
 
@@ -769,14 +886,14 @@
                 try {
                     imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 } catch (e) {
-                    alert('Nije moguće očitati boju s ekrana (blokirano od preglednika).');
+                    alert('Not posible to pick a color from the screen (browser blocked).');
                     return;
                 }
 
                 openEyedropperOverlay(canvas, imageData, inputId);
             } catch (err) {
                 console.error('Eyedropper fallback error:', err);
-                alert('Greška pri hvatanju ekrana: ' + err.message);
+                alert('Error catching screen: ' + err.message);
                 stream.getTracks().forEach(track => track.stop());
             }
         };
@@ -787,7 +904,7 @@
             overlay.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.85); z-index:5000; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px;';
 
             const hint = document.createElement('div');
-            hint.innerText = 'Klikni bilo gdje na snimku da odabereš boju (Esc za otkazivanje)';
+            hint.innerText = 'Click anywhere to picks a color (Esc to cancel)';
             hint.style.cssText = 'color:#fff; font-size:13px; font-weight:bold;';
 
             const displayCanvas = document.createElement('canvas');
@@ -849,6 +966,101 @@
         fetchAndDrawMarkers();
     };
 
+    // Shared by fetchAndDrawMarkers() (live) and renderExportCanvas() (export override).
+    // mode: 0/1/2 same as markerModeState (color only shows when mode > 0).
+    // colorStyle: 0 = colored ring border around the avatar, 1 = small color dot swatch.
+    function applyAvatarColorStyling(mode, colorStyle) {
+        document.querySelectorAll('.fish-card').forEach(card => {
+            const fishId = card.dataset.fishId;
+            const avatarWrapper = card.querySelector('.fish-avatar-wrapper');
+            const fishHeader = card.querySelector('.fish-header');
+            if (!avatarWrapper || !fishHeader) return;
+
+            const existingCircle = fishHeader.querySelector('.avatar-color-circle');
+            if (existingCircle) existingCircle.remove();
+            avatarWrapper.style.border = '';
+            avatarWrapper.style.boxShadow = '';
+
+            const activeColor = fishColorMap[fishId];
+            if (!activeColor || mode <= 0) return;
+
+            avatarWrapper.dataset.markerColor = activeColor;
+            if (colorStyle === 1) {
+                const circle = document.createElement('div');
+                circle.className = 'avatar-color-circle';
+                circle.style.background = activeColor;
+                fishHeader.appendChild(circle);
+            } else {
+                avatarWrapper.style.border = `7px solid ${activeColor}`;
+                avatarWrapper.style.boxShadow = `0 0 0 2px rgba(0,0,0,0.4), 0 0 12px 2px ${activeColor}`;
+            }
+        });
+    }
+
+    window.cycleAvatarColorStyle = function(event) {
+        const toggleEl = document.getElementById('avatarColorToggle');
+        const rect = toggleEl.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        avatarColorStyle = (clickX < rect.width / 2) ? 0 : 1;
+        updateAvatarColorToggleUI();
+        applyAvatarColorStyling(markerModeState, avatarColorStyle);
+    };
+
+    function updateAvatarColorToggleUI() {
+        const sliderBg = document.getElementById('avatarColorSliderBg');
+        const options = document.querySelectorAll('#avatarColorToggle .dual-toggle-option');
+        if (!sliderBg) return;
+        sliderBg.style.left = (avatarColorStyle * 50) + '%';
+        options.forEach((opt, idx) => opt.classList.toggle('active', idx === avatarColorStyle));
+    }
+
+    window.cycleAeAvatarColorStyle = function(event) {
+        const toggleEl = document.getElementById('aeAvatarColorToggle');
+        const rect = toggleEl.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        aeAvatarColorStyleState = (clickX < rect.width / 2) ? 0 : 1;
+        updateAeAvatarColorToggleUI();
+    };
+
+    function updateAeAvatarColorToggleUI() {
+        const sliderBg = document.getElementById('aeAvatarColorSliderBg');
+        const options = document.querySelectorAll('#aeAvatarColorToggle .dual-toggle-option');
+        if (!sliderBg) return;
+        sliderBg.style.left = (aeAvatarColorStyleState * 50) + '%';
+        options.forEach((opt, idx) => opt.classList.toggle('active', idx === aeAvatarColorStyleState));
+    }
+
+    window.cycleAeMarkerMode = function(event) {
+        const toggleEl = document.getElementById('aeMarkerModeToggle');
+        const rect = toggleEl.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const third = rect.width / 3;
+
+        if (clickX < third) {
+            aeMarkerModeState = 0;
+        } else if (clickX < third * 2) {
+            aeMarkerModeState = 1;
+        } else {
+            aeMarkerModeState = 2;
+        }
+        updateAeMarkerModeUI();
+    };
+
+    function updateAeMarkerModeUI() {
+        const sliderBg = document.getElementById('aeMarkerModeSliderBg');
+        const options = document.querySelectorAll('#aeMarkerModeToggle .triple-toggle-option');
+        if (!sliderBg) return;
+
+        sliderBg.style.left = (aeMarkerModeState * 33.33) + '%';
+        options.forEach((opt, idx) => {
+            if (idx === aeMarkerModeState) {
+                opt.classList.add('active');
+            } else {
+                opt.classList.remove('active');
+            }
+        });
+    }
+
     function updateTripleToggleUI() {
         const sliderBg = document.getElementById('tripleSliderBg');
         const options = document.querySelectorAll('.triple-toggle-option');
@@ -903,7 +1115,7 @@
         MAPS.forEach(m => {
             const btn = document.createElement('div');
             btn.className = 'map-btn';
-            btn.innerHTML = `<img src="${m.thumb}" alt="${m.name}">`;
+            btn.innerHTML = `<img src="${m.thumb}" alt="${m.name}"><span class="map-btn-label">${m.name}</span>`;
             btn.onclick = () => selectMap(m, btn);
             container.appendChild(btn);
         });
@@ -1017,7 +1229,7 @@
             let fishName = fish.name || 'Unknown Fish';
             let fishHeaderTopHtml = `
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <span style="font-size: 14px; font-weight: bold; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${fishName}</span>
+                    <span class="fish-name-label">${fishName}</span>
                     <div class="fish-rarity-badge rarity-${rarity}">${rarity}</div>
                 </div>`;
 
@@ -1342,23 +1554,7 @@
             layer.appendChild(el);
         });
 
-        document.querySelectorAll('.fish-card').forEach(card => {
-            const fishId = card.dataset.fishId;
-            const avatarWrapper = card.querySelector('.fish-avatar-wrapper');
-            let activeColor = fishColorMap[fishId];
-            let currentMode = typeof markerModeState !== 'undefined' ? markerModeState : 0;
-
-            if (avatarWrapper && activeColor) {
-                avatarWrapper.dataset.markerColor = activeColor;
-                if (currentMode > 0) {
-                    avatarWrapper.style.border = `5px solid ${activeColor}`;
-                } else {
-                    avatarWrapper.style.border = '';
-                }
-            } else if (avatarWrapper) {
-                avatarWrapper.style.border = '';
-            }
-        });
+        applyAvatarColorStyling(markerModeState, avatarColorStyle);
     }
 
     async function deleteMarker(id) {
@@ -1611,7 +1807,7 @@
 
         const canvas = await renderExportCanvas(options);
         if (!canvas) {
-            alert("Došlo je do greške prilikom generiranja slike.");
+            alert("Error occured while generating image.");
             return;
         }
 
@@ -1626,8 +1822,19 @@
     async function renderExportCanvas(options) {
         const {
             includeMap, includeMarkers, includeCards, includeCardInfo, includeMarkerInfo,
-            includeSize, includeSpeed, includeMinigame, includeOOS
+            includeSize, includeSpeed, includeMinigame, includeOOS,
+            markerSize, markerMode, avatarColorStyle: avatarColorStyleOverride
         } = options;
+
+        // markerSize/markerMode/avatarColorStyleOverride are only passed in by the
+        // automated/pushed export flow (getGlobalExportOptions). Manual "Generate &
+        // Download" leaves them undefined, so it keeps using whatever is currently shown.
+        const originalMarkerSizeVar = document.documentElement.style.getPropertyValue('--marker-size');
+        if (typeof markerSize === 'number') {
+            document.documentElement.style.setProperty('--marker-size', markerSize + 'px');
+        }
+        const effectiveMarkerMode = (typeof markerMode === 'number') ? markerMode : markerModeState;
+        const effectiveAvatarColorStyle = (typeof avatarColorStyleOverride === 'number') ? avatarColorStyleOverride : avatarColorStyle;
 
         const targetElement = document.querySelector('.stage');
         if (!targetElement) return;
@@ -1774,22 +1981,32 @@
                     const el = document.createElement('div');
                     const qualityClass = m.quality ? m.quality.toLowerCase() : 'bronze';
                     el.className = `marker quality-${qualityClass}`;
+                    el.dataset.markerId = m.id;
                     
                     el.style.left = (m.x || 0) + '%';
                     el.style.top = (m.y || 0) + '%';
 
                     let markerColor = m.color || fishColorMap[fish.id] || fish.color || '';
-                    let currentMode = typeof markerModeState !== 'undefined' ? markerModeState : 0;
 
-                    if (currentMode === 0) {
+                    if (effectiveMarkerMode === 0) {
                         el.style.backgroundImage = `url(${fish.img})`;
                         el.style.backgroundColor = '';
-                    } else if (currentMode === 1) {
+                    } else if (effectiveMarkerMode === 1) {
                         el.style.backgroundImage = `url(${fish.img})`;
                         el.style.backgroundColor = markerColor;
-                    } else if (currentMode === 2) {
+                    } else if (effectiveMarkerMode === 2) {
                         el.style.backgroundImage = 'none';
                         el.style.backgroundColor = markerColor;
+                    }
+
+                    // Bug fix: the badge was never created here (unlike fetchAndDrawMarkers),
+                    // so "Include Marker Info" had nothing to number/label onto in the
+                    // exported screenshot. Create it the same way the live map does.
+                    if (includeMarkerInfo && (m.info || m.ingame_img)) {
+                        const badge = document.createElement('div');
+                        badge.className = 'marker-info-badge';
+                        badge.innerText = 'i';
+                        el.appendChild(badge);
                     }
 
                     markersLayer.appendChild(el);
@@ -1801,8 +2018,7 @@
                 markersData.forEach((m) => {
                     if (m.info && m.info.trim() !== '') {
                         const cardEl = document.querySelector(`.fish-card[data-fish-id="${m.fish_id}"]`);
-                        const renderedMarkers = markersLayer.querySelectorAll('.marker');
-                        const markerEl = Array.from(renderedMarkers).find((_, idx) => markersData[idx]?.id === m.id);
+                        const markerEl = markersLayer.querySelector(`.marker[data-marker-id="${m.id}"]`);
                         
                         let currentIdx = globalIndex++; 
 
@@ -1815,20 +2031,21 @@
                         }
 
                         if (markerEl) {
-                            modifiedMarkers.push({ element: markerEl, originalHTML: markerEl.innerHTML });
-                            markerEl.style.position = 'relative';
-                            const exclamationEl = markerEl.querySelector('span, div');
-                            if (exclamationEl) {
-                                exclamationEl.innerText = currentIdx;
-                            } else {
-                                markerEl.innerText = currentIdx;
+                            const badgeEl = markerEl.querySelector('.marker-info-badge');
+                            if (badgeEl) {
+                                modifiedMarkers.push({ element: badgeEl, originalHTML: badgeEl.innerHTML });
+                                badgeEl.innerText = currentIdx;
                             }
                         }
                     }
                 });
             }
         }
-        
+
+        // Applies whatever mode/style should be used for THIS export (override for
+        // automated/pushed exports, live state for manual "Generate & Download").
+        applyAvatarColorStyling(effectiveMarkerMode, effectiveAvatarColorStyle);
+
         await new Promise(resolve => setTimeout(resolve, 200));
 
         let resultCanvas = null;
@@ -1844,6 +2061,12 @@
             console.error("Error generating screenshot:", error);
             resultCanvas = null;
         } finally {
+            if (typeof markerSize === 'number') {
+                document.documentElement.style.setProperty('--marker-size', originalMarkerSizeVar || '40px');
+            }
+            // Restore the fish-card avatars back to whatever the live view actually has
+            // set, since we may have temporarily overridden it above for this export.
+            applyAvatarColorStyling(markerModeState, avatarColorStyle);
             modifiedMinigames.forEach(item => { item.element.innerHTML = item.originalHTML; });
             modifiedMarkers.forEach(item => { item.element.innerHTML = item.originalHTML; });
 
@@ -1999,7 +2222,10 @@
             includeSize: o.include_size !== false,
             includeSpeed: o.include_speed !== false,
             includeMinigame: o.include_minigame !== false,
-            includeOOS: o.include_oos !== false
+            includeOOS: o.include_oos !== false,
+            markerSize: (typeof o.marker_size === 'number') ? o.marker_size : 40,
+            markerMode: (typeof o.marker_mode === 'number') ? o.marker_mode : 0,
+            avatarColorStyle: (typeof o.avatar_color_style === 'number') ? o.avatar_color_style : 0
         };
     }
 
@@ -2027,14 +2253,14 @@
         if (!mapObj || !setObj) return;
         const exportOptions = await getGlobalExportOptions();
         const url = await silentExportTarget(mapObj, setObj, exportOptions);
-        alert(url ? 'Export uspješan!' : 'Greška pri exportu — provjeri konzolu.');
+    alert(url ? 'Export successful!' : 'Error exporting - check console.');
         renderExportLinksList();
     };
 
     window.pushAllExports = async function() {
         const results = await runAutomatedExports();
         const ok = results.filter(r => r.url).length;
-        alert(`Gotovo: ${ok}/${results.length} exporta uspješno.`);
+        alert(`Done: ${ok}/${results.length} export successful.`);
         renderExportLinksList();
     };
 
@@ -2056,14 +2282,26 @@
             include_speed: true,
             include_minigame: true,
             include_oos: true,
-            include_marker_info: document.getElementById('aeChkMarkerInfo').checked
+            include_marker_info: document.getElementById('aeChkMarkerInfo').checked,
+            marker_size: parseInt(document.getElementById('aeMarkerSizeSlider').value, 10),
+            marker_mode: aeMarkerModeState,
+            avatar_color_style: aeAvatarColorStyleState
         };
         const { error } = await db.from('export_options').upsert(payload);
         if (error) {
-            alert('Greška pri spremanju opcija.');
+            alert('Error saving options.');
             console.error(error);
         } else {
-            alert('Opcije spremljene.');
+            alert('Options saved.');
+        }
+    };
+
+    window.setAllExportTargets = async function(enabled) {
+        const container = document.getElementById('autoExportTargetsList');
+        const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+        for (const chk of checkboxes) {
+            chk.checked = enabled;
+            await toggleExportTarget(chk.dataset.map, chk.dataset.set, enabled);
         }
     };
 
@@ -2105,6 +2343,16 @@
         document.getElementById('aeChkCards').checked = data.include_cards !== false;
         document.getElementById('aeChkCardInfo').checked = data.include_card_info !== false;
         document.getElementById('aeChkMarkerInfo').checked = data.include_marker_info !== false;
+
+        const sizeVal = (typeof data.marker_size === 'number') ? data.marker_size : 40;
+        document.getElementById('aeMarkerSizeSlider').value = sizeVal;
+        document.getElementById('aeMarkerSizeVal').innerText = sizeVal + 'px';
+
+        aeMarkerModeState = (typeof data.marker_mode === 'number') ? data.marker_mode : 0;
+        updateAeMarkerModeUI();
+
+        aeAvatarColorStyleState = (typeof data.avatar_color_style === 'number') ? data.avatar_color_style : 0;
+        updateAeAvatarColorToggleUI();
     }
 
     async function renderExportLinksList() {
@@ -2118,10 +2366,12 @@
         }
         data.forEach(row => {
             const div = document.createElement('div');
+            div.className = 'export-link-row';
             div.style.cssText = 'display:flex; justify-content:space-between; align-items:center; gap:6px; background:#1a1a1a; padding:6px; border-radius:4px;';
             const updated = row.updated_at ? new Date(row.updated_at).toLocaleString('hr-HR') : '';
             div.innerHTML = `
-                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                <input type="checkbox" class="export-link-chk" data-url="${row.url}" style="flex-shrink:0; cursor:pointer;">
+                <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                     <strong>${row.map_name}</strong> — ${row.set_name}<br>
                     <span style="color:#777;">${updated}</span>
                 </span>
@@ -2135,6 +2385,23 @@
             container.appendChild(div);
         });
     }
+
+    window.setAllLinkCheckboxes = function(checked) {
+        document.querySelectorAll('#exportLinksList .export-link-chk').forEach(chk => {
+            chk.checked = checked;
+        });
+    };
+
+    window.copySelectedLinks = function() {
+        const checked = Array.from(document.querySelectorAll('#exportLinksList .export-link-chk:checked'));
+        if (checked.length === 0) {
+            alert('No links selected.');
+            return;
+        }
+        const urls = checked.map(chk => chk.dataset.url).join('\n');
+        navigator.clipboard.writeText(urls);
+        alert(`Copied ${checked.length} link(s) to clipboard.`);
+    };
 
     window.openAutoExportModal = function() {
         if (!isAdmin) return;
