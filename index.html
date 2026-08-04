@@ -234,7 +234,7 @@
             transition: 0.2s;
             box-shadow: 0 6px 15px rgba(0,0,0,0.4);
             min-height: 340px;
-            max-height: calc(25vh - 15px);
+            max-height: calc(32vh - 15px);
         }   
 
         .fish-card.active { border-color: var(--accent); opacity: 1; background: #2f2f2f; }
@@ -364,7 +364,7 @@
         .fish-stats { font-size: 13px; color: #aaa; display: flex; flex-direction: column; gap: 8px; }
 
         .stats-row {
-            font-size: 20px;
+            font-size: 30px;
             color: #aaa;
             display: flex;
             flex-direction: column;
@@ -372,7 +372,7 @@
         }
 
         .speed-icon {
-            font-size: 26px;
+            font-size: 39px;
             color: #444;
             opacity: 0.7;
             font-weight: bold;
@@ -385,10 +385,10 @@
 
         .icons-container {
             display: flex;
-            gap: 4px; 
+            gap: 6px; 
             align-items: flex-end;
             justify-content: flex-start;
-            height: 35px;                  
+            height: 53px;                  
         }
 
         .shadow-svg-icon {
@@ -403,11 +403,11 @@
             opacity: 1;
         }
         
-        .shadow-svg-icon:nth-child(1) { width: 12px; height: 13px; }
-        .shadow-svg-icon:nth-child(2) { width: 17px; height: 19px; }
-        .shadow-svg-icon:nth-child(3) { width: 22px; height: 25px; }
-        .shadow-svg-icon:nth-child(4) { width: 27px; height: 31px; }
-        .shadow-svg-icon:nth-child(5) { width: 32px; height: 37px; }
+        .shadow-svg-icon:nth-child(1) { width: 18px; height: 20px; }
+        .shadow-svg-icon:nth-child(2) { width: 26px; height: 29px; }
+        .shadow-svg-icon:nth-child(3) { width: 33px; height: 38px; }
+        .shadow-svg-icon:nth-child(4) { width: 41px; height: 47px; }
+        .shadow-svg-icon:nth-child(5) { width: 48px; height: 56px; }
 
         #mapWrapper { 
             display: flex;
@@ -1790,7 +1790,16 @@
         subContainer.style.opacity = '1';
     }
     
+    // Guard against overlapping export runs — without this, clicking export
+    // buttons multiple times (or an automated run overlapping a manual one)
+    // causes concurrent renderExportCanvas() calls to write into the same
+    // shared DOM (fish cards, marker-info boxes), duplicating content.
+    let exportBusy = false;
+
     window.generateExportImage = async function() {
+        if (exportBusy) { alert('Currently exporting, please wait.'); return; }
+        exportBusy = true;
+        try {
         const options = {
             includeMap: document.getElementById('chkMap').checked,
             includeMarkers: document.getElementById('chkMarkers').checked,
@@ -1815,11 +1824,15 @@
         link.download = `deep-maps-export-${Date.now()}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
+        } finally {
+            exportBusy = false;
+        }
     };
 
     // Core render logic shared by manual download AND automated/silent exports.
     // Returns a canvas, or null on error. Always restores the DOM afterwards.
     async function renderExportCanvas(options) {
+        const exportRunId = `${Date.now()}-${Math.random()}`;
         const {
             includeMap, includeMarkers, includeCards, includeCardInfo, includeMarkerInfo,
             includeSize, includeSpeed, includeMinigame, includeOOS,
@@ -2025,6 +2038,12 @@
                         if (cardEl) {
                             const infoBox = cardEl.querySelector('.card-marker-info');
                             if (infoBox) {
+                                // dataset flag so a stray overlapping run can't append onto
+                                // content this run already wrote to this box
+                                if (infoBox.dataset.exportRunId !== exportRunId) {
+                                    infoBox.innerHTML = '';
+                                    infoBox.dataset.exportRunId = exportRunId;
+                                }
                                 infoBox.style.display = 'block';
                                 infoBox.innerHTML += `<div style="margin-bottom: 4px;"><strong>[${currentIdx}]</strong> ${m.info}</div>`;
                             }
@@ -2232,29 +2251,41 @@
     // Entry point called by the headless-browser automation script (monthly cron),
     // and by the "Push All Now" button. Exports every enabled map/set target.
     window.runAutomatedExports = async function() {
-        const exportOptions = await getGlobalExportOptions();
-        const { data: targetRows } = await db.from('export_targets').select('*').eq('enabled', true);
-        const targets = targetRows || [];
+        if (exportBusy) { console.warn('Export already in progress, skipping overlapping run.'); return []; }
+        exportBusy = true;
+        try {
+            const exportOptions = await getGlobalExportOptions();
+            const { data: targetRows } = await db.from('export_targets').select('*').eq('enabled', true);
+            const targets = targetRows || [];
 
-        const results = [];
-        for (const t of targets) {
-            const mapObj = MAPS.find(m => m.id === t.map_id);
-            const setObj = SETS.find(s => s.id === t.set_id);
-            if (!mapObj || !setObj) continue;
-            const url = await silentExportTarget(mapObj, setObj, exportOptions);
-            results.push({ map: mapObj.name, set: setObj.name, url });
+            const results = [];
+            for (const t of targets) {
+                const mapObj = MAPS.find(m => m.id === t.map_id);
+                const setObj = SETS.find(s => s.id === t.set_id);
+                if (!mapObj || !setObj) continue;
+                const url = await silentExportTarget(mapObj, setObj, exportOptions);
+                results.push({ map: mapObj.name, set: setObj.name, url });
+            }
+            return results;
+        } finally {
+            exportBusy = false;
         }
-        return results;
     };
 
     window.pushSingleExport = async function(mapId, setId) {
-        const mapObj = MAPS.find(m => m.id === mapId);
-        const setObj = SETS.find(s => s.id === setId);
-        if (!mapObj || !setObj) return;
-        const exportOptions = await getGlobalExportOptions();
-        const url = await silentExportTarget(mapObj, setObj, exportOptions);
-    alert(url ? 'Export successful!' : 'Error exporting - check console.');
-        renderExportLinksList();
+        if (exportBusy) { alert('Currently exporting, please wait.'); return; }
+        exportBusy = true;
+        try {
+            const mapObj = MAPS.find(m => m.id === mapId);
+            const setObj = SETS.find(s => s.id === setId);
+            if (!mapObj || !setObj) return;
+            const exportOptions = await getGlobalExportOptions();
+            const url = await silentExportTarget(mapObj, setObj, exportOptions);
+            alert(url ? 'Export successful!' : 'Error exporting - check console.');
+            renderExportLinksList();
+        } finally {
+            exportBusy = false;
+        }
     };
 
     window.pushAllExports = async function() {
