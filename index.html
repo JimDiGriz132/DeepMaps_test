@@ -2164,49 +2164,33 @@
     // Switches to a given map+set (without needing DOM buttons), captures the export
     // canvas, uploads it to a FIXED filename in Supabase Storage (so the public URL
     // never changes), records the link, then restores whatever was selected before.
-    // Webhook URL kanala u koji se automatski šalje slika nakon svakog exporta.
-    // Za testiranje na svom Discordu: napravi webhook na svom kanalu, zalijepi URL ovdje.
-    // Kasnije za produkciju samo zamijeni ovaj string s pravim webhook URL-om — ništa
-    // se drugo u kodu ne mijenja.
-    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1534295441049391144/rH1r3N2BGHrBnBt8vJW6Wda__EAGw06yNzNGYI4q9uPRNeDll4cRD3R6U-B0ZBG99Yny';
+    // Slanje slike na Discord ide preko server-side Edge Functiona (discord-post),
+    // ne direktno na webhook — pravi webhook URL nikad ne dolazi u browser, pa ga
+    // F12/View Source ne mogu otkriti. Funkcija sama nađe/obriše prijašnju poruku
+    // i upiše novi discord_message_id u bazu.
+    const DISCORD_POST_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/discord-post`;
 
-    // Šalje sliku kao attachment na Discord webhook (bez cache problema, jer nije link
-    // nego direktan upload). Ako postoji prevMessageId (poruka od prošlog exporta za
-    // isti map/set), prvo je briše da kanal ne gomila stare slike svaki mjesec.
-    // Vraća ID nove poruke (za brisanje idući put), ili null ako nešto ne uspije.
-    async function postToDiscordWebhook(blob, fileName, mapObj, setObj, prevMessageId) {
-        if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes('PROMIJENI')) {
-            console.warn('Discord webhook URL not set — skipping.');
-            return null;
-        }
-
-        if (prevMessageId) {
-            try {
-                await fetch(`${DISCORD_WEBHOOK_URL}/messages/${prevMessageId}`, { method: 'DELETE' });
-            } catch (e) {
-                console.warn('Deleting previous Discord message did not work (Maybe deleted manually?):', e);
-            }
-        }
-
+    async function postToDiscordWebhook(blob, fileName, mapObj, setObj) {
         const form = new FormData();
-        form.append('payload_json', JSON.stringify({
-            content: `📍 **${mapObj.name} — ${setObj.name}** updated (${new Date().toLocaleString('hr-HR')})`
-        }));
+        form.append('map_id', mapObj.id);
+        form.append('set_id', setObj.id);
+        form.append('map_name', mapObj.name);
+        form.append('set_name', setObj.name);
         form.append('file', blob, fileName);
 
         try {
-            const res = await fetch(`${DISCORD_WEBHOOK_URL}?wait=true`, {
+            const res = await fetch(DISCORD_POST_FUNCTION_URL, {
                 method: 'POST',
                 body: form
             });
             if (!res.ok) {
-                console.error('Discord webhook post error:', await res.text());
+                console.error('Discord post error:', await res.text());
                 return null;
             }
-            const msg = await res.json();
-            return msg.id || null;
+            const data = await res.json();
+            return data.message_id || null;
         } catch (e) {
-            console.error('Discord webhook post exception:', e);
+            console.error('Discord post exception:', e);
             return null;
         }
     }
@@ -2264,27 +2248,18 @@
         const { data: urlData } = db.storage.from('exports').getPublicUrl(fileName);
         const publicUrl = urlData.publicUrl;
 
-        // Dohvati ID prijašnje Discord poruke za ovaj map/set (ako postoji) da je obrišemo
-        // prije slanja nove — inače je bar da direktno šaljemo novu bez brisanja stare.
-        const { data: existingRow } = await db.from('export_links')
-            .select('discord_message_id')
-            .eq('map_id', mapObj.id)
-            .eq('set_id', setObj.id)
-            .maybeSingle();
-
-        const newMessageId = await postToDiscordWebhook(
-            blob, fileName, mapObj, setObj, existingRow ? existingRow.discord_message_id : null
-        );
-
         await db.from('export_links').upsert({
             map_id: mapObj.id,
             set_id: setObj.id,
             map_name: mapObj.name,
             set_name: setObj.name,
             url: publicUrl,
-            updated_at: new Date().toISOString(),
-            discord_message_id: newMessageId
+            updated_at: new Date().toISOString()
         }, { onConflict: 'map_id,set_id' });
+
+        // Discord post (uklj. brisanje prijašnje poruke i upis discord_message_id)
+        // radi se server-side u Edge Functionu — ovdje samo šaljemo sliku.
+        await postToDiscordWebhook(blob, fileName, mapObj, setObj);
 
         return publicUrl;
     }
