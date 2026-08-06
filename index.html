@@ -223,18 +223,25 @@
         .fish-card { 
             background: #262626; 
             border-radius: 8px; 
-            padding: 20px; 
             cursor: pointer; 
             border: 3px solid transparent; 
             display: flex;
             flex: 1;
+            min-height: 0;
             flex-direction: column;
-            gap: 15px;
             opacity: 0.8; 
             transition: 0.2s;
             box-shadow: 0 6px 15px rgba(0,0,0,0.4);
-            min-height: 340px;
-            max-height: calc(32vh - 15px);
+            /* card becomes its own scaling context: --fs is a "px" unit that
+               shrinks/grows with the card's real rendered height (via cqh),
+               so every size below (padding, avatar, icons, fonts...) scales
+               together and always fits, regardless of screen size. */
+            container-type: size;
+            container-name: fishcard;
+            --fs: clamp(9px, 4.4cqh, 15px);
+            padding: calc(var(--fs) * 1.333);
+            gap: var(--fs);
+            overflow: auto;
         }   
 
         .fish-card.active { border-color: var(--accent); opacity: 1; background: #2f2f2f; }
@@ -249,14 +256,15 @@
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            gap: 15px;
+            gap: calc(var(--fs) * 1);
             position: relative;
+            flex-shrink: 0;
         }
 
         .fish-avatar-wrapper {
             position: relative; 
-            width: 90px; 
-            height: 90px;
+            width: calc(var(--fs) * 6); 
+            height: calc(var(--fs) * 6);
             border-radius: 50%;
             display: flex; 
             justify-content: center; 
@@ -271,7 +279,7 @@
         .fish-name-label {
             font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-weight: 500;
-            font-size: 19px;
+            font-size: calc(var(--fs) * 1.267);
             color: #fff;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -279,8 +287,8 @@
         }
 
         .avatar-color-circle {
-            width: 90px;
-            height: 90px;
+            width: calc(var(--fs) * 6);
+            height: calc(var(--fs) * 6);
             border-radius: 50%;
             flex-shrink: 0;
             border: 2px solid rgba(255,255,255,0.1);
@@ -361,22 +369,22 @@
             z-index: 11;
         }
 
-        .fish-stats { font-size: 13px; color: #aaa; display: flex; flex-direction: column; gap: 8px; }
+        .fish-stats { font-size: calc(var(--fs) * 0.867); color: #aaa; display: flex; flex-direction: column; gap: calc(var(--fs) * 0.533); min-height: 0; }
 
         .stats-row {
-            font-size: 30px;
+            font-size: calc(var(--fs) * 2);
             color: #aaa;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: calc(var(--fs) * 0.267);
         }
 
         .speed-icon {
-            font-size: 39px;
+            font-size: calc(var(--fs) * 2.6);
             color: #444;
             opacity: 0.7;
             font-weight: bold;
-            margin-right: 4px;
+            margin-right: calc(var(--fs) * 0.267);
         }
         .speed-icon.active {
             color: #e8dfc1;
@@ -385,10 +393,10 @@
 
         .icons-container {
             display: flex;
-            gap: 6px; 
+            gap: calc(var(--fs) * 0.4); 
             align-items: flex-end;
             justify-content: flex-start;
-            height: 53px;                  
+            height: calc(var(--fs) * 3.533);                  
         }
 
         .shadow-svg-icon {
@@ -403,11 +411,11 @@
             opacity: 1;
         }
         
-        .shadow-svg-icon:nth-child(1) { width: 18px; height: 20px; }
-        .shadow-svg-icon:nth-child(2) { width: 26px; height: 29px; }
-        .shadow-svg-icon:nth-child(3) { width: 33px; height: 38px; }
-        .shadow-svg-icon:nth-child(4) { width: 41px; height: 47px; }
-        .shadow-svg-icon:nth-child(5) { width: 48px; height: 56px; }
+        .shadow-svg-icon:nth-child(1) { width: calc(var(--fs) * 1.2); height: calc(var(--fs) * 1.333); }
+        .shadow-svg-icon:nth-child(2) { width: calc(var(--fs) * 1.733); height: calc(var(--fs) * 1.933); }
+        .shadow-svg-icon:nth-child(3) { width: calc(var(--fs) * 2.2); height: calc(var(--fs) * 2.533); }
+        .shadow-svg-icon:nth-child(4) { width: calc(var(--fs) * 2.733); height: calc(var(--fs) * 3.133); }
+        .shadow-svg-icon:nth-child(5) { width: calc(var(--fs) * 3.2); height: calc(var(--fs) * 3.733); }
 
         #mapWrapper { 
             display: flex;
@@ -504,14 +512,16 @@
         .minigame-preview {
             position: relative;
             width: 100%;
-            height: 28px;
+            height: calc(var(--fs) * 1.867);
+            min-height: 12px;
             background: #1a1a1a;
             overflow: hidden;
             border-radius: 4px;
-            margin-top: 6px;
+            margin-top: calc(var(--fs) * 0.4);
             display: none;
             border: 1px solid #333;
             box-sizing: border-box;
+            flex-shrink: 0;
         }
 
         .minigame-preview.active { display: block; }
@@ -554,6 +564,7 @@
         }
 
         .fish-rarity-badge {
+            flex-shrink: 0;
             padding: 4px 10px;
             font-size: 11px;
             font-weight: bold;
@@ -2065,6 +2076,43 @@
         // automated/pushed exports, live state for manual "Generate & Download").
         applyAvatarColorStyling(effectiveMarkerMode, effectiveAvatarColorStyle);
 
+        // Readability boost for export only: bigger fish name + OOS badge text,
+        // with a slightly smaller avatar/color-dot to make room. Live view is
+        // untouched — these are inline overrides cleared again in `finally`.
+        const exportAvatarSize = 62;
+        document.querySelectorAll('.fish-card').forEach(card => {
+            const avatarWrapper = card.querySelector('.fish-avatar-wrapper');
+            const colorCircle = card.querySelector('.avatar-color-circle');
+            const nameLabel = card.querySelector('.fish-name-label');
+            const oosBox = card.querySelector('div[style*="background: rgba(0,0,0,0.2)"]');
+
+            if (avatarWrapper) {
+                avatarWrapper.style.width = `${exportAvatarSize}px`;
+                avatarWrapper.style.height = `${exportAvatarSize}px`;
+            }
+            if (colorCircle) {
+                colorCircle.style.width = `${exportAvatarSize}px`;
+                colorCircle.style.height = `${exportAvatarSize}px`;
+            }
+            if (nameLabel) {
+                nameLabel.style.fontSize = '25px';
+                // html2canvas ne renderira CSS text-overflow:ellipsis pouzdano,
+                // pa ime ručno skraćujemo dok stane, i sami dodamo "…"
+                nameLabel.dataset.fullName = nameLabel.dataset.fullName || nameLabel.textContent;
+                nameLabel.textContent = nameLabel.dataset.fullName;
+                while (nameLabel.scrollWidth > nameLabel.clientWidth && nameLabel.textContent.length > 1) {
+                    nameLabel.textContent = nameLabel.textContent.slice(0, -1);
+                }
+                if (nameLabel.textContent !== nameLabel.dataset.fullName) {
+                    nameLabel.textContent = nameLabel.textContent.trimEnd() + '…';
+                }
+            }
+            if (oosBox) {
+                oosBox.style.fontSize = '16px';
+                oosBox.style.padding = '5px 9px';
+            }
+        });
+
         await new Promise(resolve => setTimeout(resolve, 200));
 
         let resultCanvas = null;
@@ -2131,11 +2179,28 @@
                 const speedRow = card.querySelector('.stats-row:nth-of-type(2)');
                 const minigameEl = card.querySelector('.minigame-preview');
                 const oosEl = card.querySelector('div[style*="background: rgba(0,0,0,0.2)"]');
+                const avatarWrapper = card.querySelector('.fish-avatar-wrapper');
+                const nameLabel = card.querySelector('.fish-name-label');
 
                 if (sizeRow) sizeRow.classList.remove('export-hidden');
                 if (speedRow) speedRow.classList.remove('export-hidden');
                 if (minigameEl) minigameEl.classList.remove('export-hidden');
-                if (oosEl) oosEl.classList.remove('export-hidden');
+                if (oosEl) {
+                    oosEl.classList.remove('export-hidden');
+                    oosEl.style.fontSize = '';
+                    oosEl.style.padding = '';
+                }
+                if (avatarWrapper) {
+                    avatarWrapper.style.width = '';
+                    avatarWrapper.style.height = '';
+                }
+                if (nameLabel) {
+                    nameLabel.style.fontSize = '';
+                    if (nameLabel.dataset.fullName) {
+                        nameLabel.textContent = nameLabel.dataset.fullName;
+                        delete nameLabel.dataset.fullName;
+                    }
+                }
             });
 
             document.querySelectorAll('.card-marker-info').forEach(box => {
