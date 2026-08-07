@@ -3,7 +3,7 @@ name: Monthly Discord Export
 on:
   schedule:
     # 1. u mjesecu u 04:00 UTC — promijeni ovdje ako želiš drugi dan/sat
-    - cron: '0 4 1 * *'
+    - cron: '15 12 * * *'
   workflow_dispatch: {}   # omogućuje i ručno pokretanje s GitHub UI-a (Actions tab -> Run workflow)
 
 jobs:
