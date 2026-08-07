@@ -810,7 +810,7 @@
     let aeMarkerModeState = 0; // marker style used specifically for automated/pushed exports
     let aeAvatarColorStyleState = 0; // avatar color style used specifically for automated/pushed exports
 
-    const ADMIN_PASSWORD = "admin123"; 
+    const ADMIN_EMAIL = "admin@deepmaps.local"; 
 
     window.updateMarkerSize = function(size) {
         document.documentElement.style.setProperty('--marker-size', size + 'px');
@@ -1100,17 +1100,24 @@
         }
     }
 
-    window.toggleAdmin = function() {
+    window.toggleAdmin = async function() {
         if (!isAdmin) {
             let pass = prompt("Insert Admin mode password:");
-            if (pass === ADMIN_PASSWORD) {
-                isAdmin = true;
-                document.getElementById('adminBtn').classList.add('on');
-            } else {
+            if (!pass) return;
+
+            const { error } = await db.auth.signInWithPassword({
+                email: ADMIN_EMAIL,
+                password: pass
+            });
+
+            if (error) {
                 alert("Wrong password!");
                 return;
             }
+            isAdmin = true;
+            document.getElementById('adminBtn').classList.add('on');
         } else {
+            await db.auth.signOut();
             isAdmin = false;
             document.getElementById('adminBtn').classList.remove('on');
         }
@@ -1119,6 +1126,18 @@
         updateMapCursor();
         fetchAndDrawMarkers();
     };
+
+    // Ako je stranica reloadana dok je admin još prijavljen (Supabase Auth
+    // sesija se pamti u localStorage), automatski vrati "Admin: ON" stanje.
+    (async function restoreAdminSessionOnLoad() {
+        const { data: { session } } = await db.auth.getSession();
+        if (session) {
+            isAdmin = true;
+            document.getElementById('adminBtn').classList.add('on');
+            document.getElementById('adminBtn').innerText = 'Admin: ON';
+            document.getElementById('autoExportBtn').style.display = 'block';
+        }
+    })();
 
     function initMapSelector() {
         const container = document.getElementById('mapSelector');
