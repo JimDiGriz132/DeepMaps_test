@@ -120,34 +120,34 @@
   "_comment": "array of fish in set is composed of fish id-s from above",
 
   "sets": [
-    { "id": "set1", "map_id": "map1", "name": "Set 1", "fishes": ["f_Bluefish", "f_Largetoothflounder", "f_Porcupinefish", "f_LongtailTuna"] },
-    { "id": "set2", "map_id": "map1", "name": "Set 2", "fishes": ["f_GreenHuumpheadParrotfish", "f_BlueTrevally", "f_WhiteTuna", "f_Clovnfish"] },
-    { "id": "set3", "map_id": "map1", "name": "Set 3", "fishes": ["f_Bonefish", "f_BlueTrevally", "f_SnubnosePompano", "f_PelagicStingray"] },
+    { "id": "set1", "map_id": "map1", "name": "Bluefish, Largetooth Flounder, Porcupinefish, Longtail Tuna", "fishes": ["f_Bluefish", "f_Largetoothflounder", "f_Porcupinefish", "f_LongtailTuna"] },
+    { "id": "set2", "map_id": "map1", "name": "Green Humphead Parrotfish, Blue Trevally, White Tuna, Clownfish", "fishes": ["f_GreenHuumpheadParrotfish", "f_BlueTrevally", "f_WhiteTuna", "f_Clovnfish"] },
+    { "id": "set3", "map_id": "map1", "name": "Bonefish, Blue Trevally, Snubnose Pompano, Pelagic Stingray", "fishes": ["f_Bonefish", "f_BlueTrevally", "f_SnubnosePompano", "f_PelagicStingray"] },
 
-    { "id": "set4", "map_id": "map2", "name": "Set 1", "fishes": ["f_BrookTrout", "f_CohoSalmon", "f_ChannelCatfish", "f_LargemouthBass"] },
-    { "id": "set5", "map_id": "map2", "name": "Set 2", "fishes": ["f_ChinookSalmon", "f_SeaLamprey", "f_WhiteBass", "f_YellowPerch"] },
-    { "id": "set6", "map_id": "map2", "name": "Set 3", "fishes": ["f_BrownTrout", "f_LakeSturgeon", "f_LakeTrout", "f_PinkSalmon"] },
+    { "id": "set4", "map_id": "map2", "name": "Brook Trout, Coho Salmon, Channel Catfish, Largemouth Bass", "fishes": ["f_BrookTrout", "f_CohoSalmon", "f_ChannelCatfish", "f_LargemouthBass"] },
+    { "id": "set5", "map_id": "map2", "name": "Chinook Salmon, Sea Lamprey, White Bass, Yellow Perch", "fishes": ["f_ChinookSalmon", "f_SeaLamprey", "f_WhiteBass", "f_YellowPerch"] },
+    { "id": "set6", "map_id": "map2", "name": "Brown Trout, Lake Sturgeon, Lake Trout, Pink Salmon", "fishes": ["f_BrownTrout", "f_LakeSturgeon", "f_LakeTrout", "f_PinkSalmon"] },
 
-    { "id": "set7", "map_id": "map3", "name": "Set 1", "fishes": ["f_Barracuda", "f_BlueMarlin", "f_Pompano", "f_Snook"] },
-    { "id": "set8", "map_id": "map3", "name": "Set 2", "fishes": ["f_Dorado", "f_Roosterfish", "f_Tarpon", "f_YellowfinTuna"] },
-    { "id": "set9", "map_id": "map3", "name": "Set 3", "fishes": ["f_BroomtailGrouper", "f_PacificSailfish", "f_JackCrevalle", "f_StripedMarlin"] },
+    { "id": "set7", "map_id": "map3", "name": "Barracuda, Blue Marlin, Pompano, Snook", "fishes": ["f_Barracuda", "f_BlueMarlin", "f_Pompano", "f_Snook"] },
+    { "id": "set8", "map_id": "map3", "name": "Dorado, Roosterfish, Tarpon, Yellowfin Tuna", "fishes": ["f_Dorado", "f_Roosterfish", "f_Tarpon", "f_YellowfinTuna"] },
+    { "id": "set9", "map_id": "map3", "name": "Broomtail Grouper, Pacific Sailfish, Jack Crevalle, Striped Marlin", "fishes": ["f_BroomtailGrouper", "f_PacificSailfish", "f_JackCrevalle", "f_StripedMarlin"] },
 
-    { "id": "set10", "map_id": "map4", "name": "Set 1", "fishes": ["f_ArcticChar", "f_DollyVarden", "f_RougheyeRockfish", "f_SpinySkate"] },
-    { "id": "set11", "map_id": "map4", "name": "Set 2", "fishes": ["f_Coalfish", "f_Steelhead", "f_HumpbackSalmon", "f_Halibut"] },
-    { "id": "set12", "map_id": "map4", "name": "Set 3", "fishes": ["f_ChumSalmon", "f_SilverSalmon", "f_Lancetfish", "f_BlueLingcod"] },
+    { "id": "set10", "map_id": "map4", "name": "Arctic Char, Dolly Varden, Rougheye Rockfish, Spiny Skate", "fishes": ["f_ArcticChar", "f_DollyVarden", "f_RougheyeRockfish", "f_SpinySkate"] },
+    { "id": "set11", "map_id": "map4", "name": "Coalfish, Steelhead, Humpback Salmon, Halibut", "fishes": ["f_Coalfish", "f_Steelhead", "f_HumpbackSalmon", "f_Halibut"] },
+    { "id": "set12", "map_id": "map4", "name": "Chum Salmon, Silver Salmon, Lancetfish, Blue Lingcod", "fishes": ["f_ChumSalmon", "f_SilverSalmon", "f_Lancetfish", "f_BlueLingcod"] },
 
-    { "id": "set13", "map_id": "map5", "name": "Set 1", "fishes": ["f_BlackSaddledCoralGrouper", "f_Albacore", "f_GoldenTrevally", "f_QueenslandGrouper"] },
-    { "id": "set14", "map_id": "map5", "name": "Set 2", "fishes": ["f_CoralTrout", "f_Tailor", "f_Barramundi", "f_GiantTrevally"] },
-    { "id": "set15", "map_id": "map5", "name": "Set 3", "fishes": ["f_SkipjackTuna", "f_JohnDory", "f_CarpetShark", "f_Swordfish"] },
+    { "id": "set13", "map_id": "map5", "name": "Black Saddled Coral Grouper, Albacore, Golden Trevally, Queensland Grouper", "fishes": ["f_BlackSaddledCoralGrouper", "f_Albacore", "f_GoldenTrevally", "f_QueenslandGrouper"] },
+    { "id": "set14", "map_id": "map5", "name": "Coral Trout, Tailor, Barramundi, Giant Trevally", "fishes": ["f_CoralTrout", "f_Tailor", "f_Barramundi", "f_GiantTrevally"] },
+    { "id": "set15", "map_id": "map5", "name": "Skipjack Tuna, John Dory, Carpet Shark, Swordfish", "fishes": ["f_SkipjackTuna", "f_JohnDory", "f_CarpetShark", "f_Swordfish"] },
 
-    { "id": "set16", "map_id": "map6", "name": "Set 1", "fishes": ["f_Carp", "f_FreshwaterBream", "f_RainbowTrout", "f_EuropeanWhitefish"] },
-    { "id": "set17", "map_id": "map6", "name": "Set 2", "fishes": ["f_EuropeanPerch", "f_Tench", "f_SeaTrout", "f_EuropeanEel"] },
+    { "id": "set16", "map_id": "map6", "name": "Carp, Freshwater Bream, Rainbow Trout, European Whitefish", "fishes": ["f_Carp", "f_FreshwaterBream", "f_RainbowTrout", "f_EuropeanWhitefish"] },
+    { "id": "set17", "map_id": "map6", "name": "European Perch, Tench, Sea Trout, European Eel", "fishes": ["f_EuropeanPerch", "f_Tench", "f_SeaTrout", "f_EuropeanEel"] },
 
-    { "id": "set18", "map_id": "map7", "name": "Set 1", "fishes": ["f_BigheadCarp", "f_MalayanLeaffish", "f_BlackEarCatfish", "f_Wallago"] },
-    { "id": "set19", "map_id": "map7", "name": "Set 2", "fishes": ["f_Bambusa", "f_SpottedSorubim", "f_Empurau", "f_GreatSnakehead"] }, 
+    { "id": "set18", "map_id": "map7", "name": "Bighead Carp, Malayan Leaffish, Black Ear Catfish, Wallago", "fishes": ["f_BigheadCarp", "f_MalayanLeaffish", "f_BlackEarCatfish", "f_Wallago"] },
+    { "id": "set19", "map_id": "map7", "name": "Bambusa, Spotted Sorubim, Empurau, Great Snakehead", "fishes": ["f_Bambusa", "f_SpottedSorubim", "f_Empurau", "f_GreatSnakehead"] }, 
 
-    { "id": "set20", "map_id": "map8", "name": "Set 1", "fishes": ["f_FreshwaterBarracuda", "f_GiantTrahira", "f_RedPiranha", "f_Zungaro"] },
-    { "id": "set21", "map_id": "map8", "name": "Set 2", "fishes": ["f_AmazonPuffer", "f_Corvina", "f_RockBacu", "f_Cachama"] } 
+    { "id": "set20", "map_id": "map8", "name": "Freshwater Barracuda, Giant Trahira, Red Piranha, Zungaro", "fishes": ["f_FreshwaterBarracuda", "f_GiantTrahira", "f_RedPiranha", "f_Zungaro"] },
+    { "id": "set21", "map_id": "map8", "name": "Amazon Puffer, Corvina, Rock Bacu, Cachama", "fishes": ["f_AmazonPuffer", "f_Corvina", "f_RockBacu", "f_Cachama"] } 
 
   ]
 }

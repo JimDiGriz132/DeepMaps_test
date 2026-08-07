@@ -279,7 +279,7 @@
         .fish-name-label {
             font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-weight: 500;
-            font-size: calc(var(--fs) * 1.267);
+            font-size: calc(var(--fs) * 1.5); /* Povećano s 1.267 na 1.5 */
             color: #fff;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -369,14 +369,21 @@
             z-index: 11;
         }
 
-        .fish-stats { font-size: calc(var(--fs) * 0.867); color: #aaa; display: flex; flex-direction: column; gap: calc(var(--fs) * 0.533); min-height: 0; }
+        .fish-stats { 
+            font-size: calc(var(--fs) * 1.1); /* Povećano s 0.867 na 1.1 */
+            color: #aaa; 
+            display: flex; 
+            flex-direction: column; 
+            gap: calc(var(--fs) * 0.6); 
+            min-height: 0; 
+        }
 
         .stats-row {
-            font-size: calc(var(--fs) * 2);
+            font-size: calc(var(--fs) * 2.2); /* Povećano s 2 na 2.2 */
             color: #aaa;
             display: flex;
             flex-direction: column;
-            gap: calc(var(--fs) * 0.267);
+            gap: calc(var(--fs) * 0.3);
         }
 
         .speed-icon {
@@ -400,14 +407,14 @@
         }
 
         .shadow-svg-icon {
-            fill: #444;
-            opacity: 0.3;
+            fill: #777; /* Posvijetljeno s #444 na svjetliju sivu */
+            opacity: 0.5; /* Povećana vidljivost s 0.3 na 0.5 */
             transition: 0.2s;
             display: inline-block;
         }
 
         .shadow-svg-icon.active {
-            fill: #e6c27a;
+            fill: #e8dfc1; 
             opacity: 1;
         }
         
@@ -1324,7 +1331,7 @@
                     ${speedBlock}
                     ${minigameHtml}
                 </div>
-                <div class="card-marker-info" style="display:none; font-size: 11px; color: #e8dfc1; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 4px; border-left: 2px solid var(--accent); margin-top: 4px;"></div>
+                <div class="card-marker-info" style="display:none; font-size: 14px; color: #e8dfc1; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 4px; border-left: 2px solid var(--accent); margin-top: 4px;"></div>
             `;
 
             card.onclick = () => activateFish(fish);
