@@ -1,26 +1,37 @@
 name: Monthly Discord Export
-
 on:
   schedule:
-    # 1. u mjesecu u 04:00 UTC — promijeni ovdje ako želiš drugi dan/sat
-    - cron: '30 16 * * *'
+    # Pokreće se svaki dan od 28. do 31. u 22:00 UTC — provjera ispod filtrira
+    # sve dane osim stvarno zadnjeg dana u mjesecu.
+    - cron: '0 22 28-31 * *'
   workflow_dispatch: {}   # omogućuje i ručno pokretanje s GitHub UI-a (Actions tab -> Run workflow)
-
 jobs:
   export:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Check if today is the last day of the month
+        id: daycheck
+        run: |
+          tomorrow=$(date -u -d "+1 day" +%d)
+          if [ "$tomorrow" != "01" ]; then
+            echo "Not the last day of the month — skipping."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
 
+      - uses: actions/checkout@v4
+        if: steps.daycheck.outputs.run == 'true'
       - uses: actions/setup-node@v4
+        if: steps.daycheck.outputs.run == 'true'
         with:
           node-version: 20
-
       - run: npm install
-
+        if: steps.daycheck.outputs.run == 'true'
       - run: npx playwright install --with-deps chromium
-
+        if: steps.daycheck.outputs.run == 'true'
       - run: npm run export
+        if: steps.daycheck.outputs.run == 'true'
         env:
           SITE_URL: ${{ secrets.SITE_URL }}
           EXPORT_BOT_EMAIL: ${{ secrets.EXPORT_BOT_EMAIL }}
