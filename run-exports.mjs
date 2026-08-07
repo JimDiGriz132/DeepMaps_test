@@ -37,10 +37,10 @@ if (!EXPORT_BOT_EMAIL || !EXPORT_BOT_PASSWORD) {
     );
 
     console.log('Prijavljujem se kao export-bot (Supabase Auth) ...');
-    const loginError = await page.evaluate(async (email, password) => {
+    const loginError = await page.evaluate(async ({ email, password }) => {
         const { error } = await db.auth.signInWithPassword({ email, password });
         return error ? error.message : null;
-    }, EXPORT_BOT_EMAIL, EXPORT_BOT_PASSWORD);
+    }, { email: EXPORT_BOT_EMAIL, password: EXPORT_BOT_PASSWORD });
 
     if (loginError) {
         console.error('Export-bot login neuspješan:', loginError);
