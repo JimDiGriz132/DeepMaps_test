@@ -8,9 +8,15 @@
 import { chromium } from 'playwright';
 
 const SITE_URL = process.env.SITE_URL;
+const EXPORT_BOT_EMAIL = process.env.EXPORT_BOT_EMAIL;
+const EXPORT_BOT_PASSWORD = process.env.EXPORT_BOT_PASSWORD;
 
 if (!SITE_URL) {
     console.error('Nedostaje SITE_URL env varijabla (link na hostanu index.html stranicu).');
+    process.exit(1);
+}
+if (!EXPORT_BOT_EMAIL || !EXPORT_BOT_PASSWORD) {
+    console.error('Nedostaju EXPORT_BOT_EMAIL / EXPORT_BOT_PASSWORD env varijable (Supabase Auth login za automatski export).');
     process.exit(1);
 }
 
@@ -29,6 +35,18 @@ if (!SITE_URL) {
         () => typeof MAPS !== 'undefined' && MAPS.length > 0 && typeof SETS !== 'undefined',
         { timeout: 30000 }
     );
+
+    console.log('Prijavljujem se kao export-bot (Supabase Auth) ...');
+    const loginError = await page.evaluate(async (email, password) => {
+        const { error } = await db.auth.signInWithPassword({ email, password });
+        return error ? error.message : null;
+    }, EXPORT_BOT_EMAIL, EXPORT_BOT_PASSWORD);
+
+    if (loginError) {
+        console.error('Export-bot login neuspješan:', loginError);
+        await browser.close();
+        process.exit(1);
+    }
 
     console.log('Pokrećem runAutomatedExports() ...');
     const results = await page.evaluate(() => window.runAutomatedExports());
