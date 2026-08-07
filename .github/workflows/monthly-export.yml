@@ -23,3 +23,5 @@ jobs:
       - run: npm run export
         env:
           SITE_URL: ${{ secrets.SITE_URL }}
+          EXPORT_BOT_EMAIL: ${{ secrets.EXPORT_BOT_EMAIL }}
+          EXPORT_BOT_PASSWORD: ${{ secrets.EXPORT_BOT_PASSWORD }}
