@@ -279,11 +279,19 @@
         .fish-name-label {
             font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-weight: 500;
-            font-size: calc(var(--fs) * 1.5); /* Povećano s 1.267 na 1.5 */
+            font-size: calc(var(--fs) * 1.8); /* Povećano s 1.267 na 1.5, pa dodatno na 1.8 */
+            line-height: 1.15;
             color: #fff;
+            /* Ime se lomi u max 2 reda (umjesto ellipsis skraćivanja u 1 redu),
+               a min-height uvijek rezervira prostor za 2 reda da sve kartice
+               budu unificirane visine bez obzira na duljinu imena. */
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
             overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            white-space: normal;
+            word-break: break-word;
+            min-height: calc(var(--fs) * 1.8 * 1.15 * 2);
         }
 
         .avatar-color-circle {
@@ -379,7 +387,7 @@
         }
 
         .stats-row {
-            font-size: calc(var(--fs) * 2.2); /* Povećano s 2 na 2.2 */
+            font-size: calc(var(--fs) * 1.8); /* Smanjeno s 2.2 na 1.8 da ostane mjesta za info box */
             color: #aaa;
             display: flex;
             flex-direction: column;
@@ -387,7 +395,7 @@
         }
 
         .speed-icon {
-            font-size: calc(var(--fs) * 2.6);
+            font-size: calc(var(--fs) * 2.1); /* Smanjeno s 2.6 na 2.1 */
             color: #444;
             opacity: 0.7;
             font-weight: bold;
@@ -403,7 +411,7 @@
             gap: calc(var(--fs) * 0.4); 
             align-items: flex-end;
             justify-content: flex-start;
-            height: calc(var(--fs) * 3.533);                  
+            height: calc(var(--fs) * 2.9); /* Smanjeno s 3.533 na 2.9 */
         }
 
         .shadow-svg-icon {
@@ -418,11 +426,11 @@
             opacity: 1;
         }
         
-        .shadow-svg-icon:nth-child(1) { width: calc(var(--fs) * 1.2); height: calc(var(--fs) * 1.333); }
-        .shadow-svg-icon:nth-child(2) { width: calc(var(--fs) * 1.733); height: calc(var(--fs) * 1.933); }
-        .shadow-svg-icon:nth-child(3) { width: calc(var(--fs) * 2.2); height: calc(var(--fs) * 2.533); }
-        .shadow-svg-icon:nth-child(4) { width: calc(var(--fs) * 2.733); height: calc(var(--fs) * 3.133); }
-        .shadow-svg-icon:nth-child(5) { width: calc(var(--fs) * 3.2); height: calc(var(--fs) * 3.733); }
+        .shadow-svg-icon:nth-child(1) { width: calc(var(--fs) * 1.0); height: calc(var(--fs) * 1.1); }
+        .shadow-svg-icon:nth-child(2) { width: calc(var(--fs) * 1.4); height: calc(var(--fs) * 1.6); }
+        .shadow-svg-icon:nth-child(3) { width: calc(var(--fs) * 1.8); height: calc(var(--fs) * 2.1); }
+        .shadow-svg-icon:nth-child(4) { width: calc(var(--fs) * 2.2); height: calc(var(--fs) * 2.6); }
+        .shadow-svg-icon:nth-child(5) { width: calc(var(--fs) * 2.6); height: calc(var(--fs) * 3.1); }
 
         #mapWrapper { 
             display: flex;
@@ -1265,9 +1273,9 @@
             
             let fishName = fish.name || 'Unknown Fish';
             let fishHeaderTopHtml = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <span class="fish-name-label">${fishName}</span>
-                    <div class="fish-rarity-badge rarity-${rarity}">${rarity}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span class="fish-name-label" style="flex: 1; min-width: 0;">${fishName}</span>
+                    <div class="fish-rarity-badge rarity-${rarity}" style="flex-shrink: 0;">${rarity}</div>
                 </div>`;
 
             const sizeBlock = (fish.shadowSize && Array.isArray(fish.shadowSize) && fish.shadowSize.length > 0) ? `
@@ -2121,17 +2129,25 @@
                 colorCircle.style.height = `${exportAvatarSize}px`;
             }
             if (nameLabel) {
-                nameLabel.style.fontSize = '25px';
-                // html2canvas ne renderira CSS text-overflow:ellipsis pouzdano,
-                // pa ime ručno skraćujemo dok stane, i sami dodamo "…"
+                nameLabel.style.fontSize = '30px';
+                // html2canvas ne renderira -webkit-line-clamp/ellipsis pouzdano,
+                // pa ime ručno skraćujemo dok stane u 2 reda i sami dodamo "…".
+                // Privremeno skidamo line-clamp da scrollHeight odražava puni
+                // (neisječeni) tekst dok mjerimo koliko stane.
                 nameLabel.dataset.fullName = nameLabel.dataset.fullName || nameLabel.textContent;
                 nameLabel.textContent = nameLabel.dataset.fullName;
-                while (nameLabel.scrollWidth > nameLabel.clientWidth && nameLabel.textContent.length > 1) {
+                nameLabel.style.webkitLineClamp = 'unset';
+                nameLabel.style.overflow = 'visible';
+                const lineHeight = parseFloat(getComputedStyle(nameLabel).lineHeight) || (30 * 1.15);
+                const maxHeight = lineHeight * 2 + 1; // +1px tolerancija za zaokruživanje
+                while (nameLabel.scrollHeight > maxHeight && nameLabel.textContent.length > 1) {
                     nameLabel.textContent = nameLabel.textContent.slice(0, -1);
                 }
                 if (nameLabel.textContent !== nameLabel.dataset.fullName) {
                     nameLabel.textContent = nameLabel.textContent.trimEnd() + '…';
                 }
+                nameLabel.style.webkitLineClamp = '';
+                nameLabel.style.overflow = '';
             }
             if (oosBox) {
                 oosBox.style.fontSize = '16px';
@@ -2222,6 +2238,8 @@
                 }
                 if (nameLabel) {
                     nameLabel.style.fontSize = '';
+                    nameLabel.style.webkitLineClamp = '';
+                    nameLabel.style.overflow = '';
                     if (nameLabel.dataset.fullName) {
                         nameLabel.textContent = nameLabel.dataset.fullName;
                         delete nameLabel.dataset.fullName;
