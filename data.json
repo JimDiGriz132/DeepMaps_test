@@ -82,7 +82,7 @@
     { "id": "f_GiantTrevally", "name": "Giant Trevally", "img": "images/fishes/fish_GiantTrevally_mini.png", "shadowSize": [2, 3], "shadowSpeed": [2], "minigame": "big_static", "rarity": "rare" },
     { "id": "f_SkipjackTuna", "name": "Skipjack Tuna", "img": "images/fishes/fish_SkipjackTuna_mini.png", "shadowSize": [3, 4], "shadowSpeed": [3], "activity": "day" },
     { "id": "f_JohnDory", "name": "John Dory", "img": "images/fishes/fish_JohnDory_mini.png", "shadowSize": [1, 2], "shadowSpeed": [1] },
-    { "id": "f_CarpetShark", "name": "Carpet Shark", "img": "images/fishes/fish_TasselledWobbegong_mini.png", "shadowSize": [5], "shadowSpeed": [1], "activity": "night" },
+    { "id": "f_CarpetShark", "name": "Carpet Shark", "img": "images/fishes/fish_TasselledWobbegong_mini.png", "shadowSize": [5], "shadowSpeed": [1] },
     { "id": "f_Swordfish", "name": "Swordfish", "img": "images/fishes/fish_Swordfish_mini.png", "shadowSize": [2, 3], "shadowSpeed": [2, 3], "minigame": "big_moving", "rarity": "rare"},
 
     { "id": "f_Carp", "name": "Carp", "img": "images/fishes/fish_CommonCarp_mini.png", "shadowSize": [5], "shadowSpeed": [1, 2]},

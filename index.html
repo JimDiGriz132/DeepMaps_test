@@ -483,25 +483,38 @@
 
         .marker-info-badge {
             position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 14px;
-            height: 14px;
-            background: var(--accent);
+            top: calc(var(--marker-size) * -0.2);
+            right: calc(var(--marker-size) * -0.2);
+            width: calc(var(--marker-size) * 0.5);
+            height: calc(var(--marker-size) * 0.5);
+            min-width: 18px;
+            min-height: 18px;
+            background: #cc5c5c;
             color: #fff;
-            font-size: 9px;
+            font-size: calc(var(--marker-size) * 0.3);
             font-weight: bold;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid #222;
+            border: 1.5px solid #222;
             pointer-events: none;
+            z-index: 2;
+            box-sizing: border-box;
         }
 
-        .quality-gold { border: 4px solid #FFD700; }
-        .quality-silver { border: 4px solid #C0C0C0; }
-        .quality-bronze { border: 4px solid #CD7F32; }
+        .quality-gold { border: 6px solid #FFD700; }
+        .quality-silver { border: 6px solid #C0C0C0; }
+        .quality-bronze { border: 6px solid #CD7F32; }
+        .quality-gold::after, .quality-silver::after, .quality-bronze::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 1.5px solid rgba(0,0,0,0.85);
+            pointer-events: none;
+            z-index: 1;
+        }
 
         .placeholder-text { text-align: center; color: #666; margin-top: 50px; font-size: 13px; }
 
@@ -1273,7 +1286,7 @@
             
             let fishName = fish.name || 'Unknown Fish';
             let fishHeaderTopHtml = `
-                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
                     <span class="fish-name-label" style="flex: 1; min-width: 0;">${fishName}</span>
                     <div class="fish-rarity-badge rarity-${rarity}" style="flex-shrink: 0;">${rarity}</div>
                 </div>`;
@@ -1315,7 +1328,7 @@
                 if (rarity === 'epic') pts = 595;
 
                 oosHtml = `
-                    <div style="font-size: 11px; color: #f3d674; text-align: left; margin-top: 6px; font-weight: bold; background: rgba(0,0,0,0.2); padding: 3px 6px; border-radius: 3px;">
+                    <div style="font-size: 11px; color: #f3d674; text-align: left; margin-top: 6px; font-weight: bold; background: rgba(0,0,0,0.2); padding: 3px 6px; border-radius: 3px; border: 1px solid #f3d674;">
                         OOS - ${pts}pts max!
                     </div>`;
             }
@@ -1339,7 +1352,7 @@
                     ${speedBlock}
                     ${minigameHtml}
                 </div>
-                <div class="card-marker-info" style="display:none; font-size: 14px; color: #e8dfc1; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 4px; border-left: 2px solid var(--accent); margin-top: 4px;"></div>
+                <div class="card-marker-info" style="display:none; font-size: 14px; color: #f3d674; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 4px; border: 1px solid #f3d674; margin-top: 4px;"></div>
             `;
 
             card.onclick = () => activateFish(fish);
@@ -2072,27 +2085,15 @@
             }
 
             if (includeMarkerInfo) {
-                let globalIndex = 1; 
+                let globalIndex = 1;
+                // fish_id -> Map(info text -> [indices]), preserves first-seen order of texts
+                const fishInfoGroups = new Map();
+
                 markersData.forEach((m) => {
                     if (m.info && m.info.trim() !== '') {
-                        const cardEl = document.querySelector(`.fish-card[data-fish-id="${m.fish_id}"]`);
                         const markerEl = markersLayer.querySelector(`.marker[data-marker-id="${m.id}"]`);
-                        
-                        let currentIdx = globalIndex++; 
 
-                        if (cardEl) {
-                            const infoBox = cardEl.querySelector('.card-marker-info');
-                            if (infoBox) {
-                                // dataset flag so a stray overlapping run can't append onto
-                                // content this run already wrote to this box
-                                if (infoBox.dataset.exportRunId !== exportRunId) {
-                                    infoBox.innerHTML = '';
-                                    infoBox.dataset.exportRunId = exportRunId;
-                                }
-                                infoBox.style.display = 'block';
-                                infoBox.innerHTML += `<div style="margin-bottom: 4px;"><strong>[${currentIdx}]</strong> ${m.info}</div>`;
-                            }
-                        }
+                        let currentIdx = globalIndex++;
 
                         if (markerEl) {
                             const badgeEl = markerEl.querySelector('.marker-info-badge');
@@ -2101,7 +2102,38 @@
                                 badgeEl.innerText = currentIdx;
                             }
                         }
+
+                        const text = m.info.trim();
+                        if (!fishInfoGroups.has(m.fish_id)) {
+                            fishInfoGroups.set(m.fish_id, new Map());
+                        }
+                        const groupMap = fishInfoGroups.get(m.fish_id);
+                        if (!groupMap.has(text)) {
+                            groupMap.set(text, []);
+                        }
+                        groupMap.get(text).push(currentIdx);
                     }
+                });
+
+                // Same info text shared across multiple markers of the same fish gets
+                // combined into a single line with all its bracketed numbers up front,
+                // instead of repeating the same text once per marker.
+                fishInfoGroups.forEach((groupMap, fishId) => {
+                    const cardEl = document.querySelector(`.fish-card[data-fish-id="${fishId}"]`);
+                    if (!cardEl) return;
+                    const infoBox = cardEl.querySelector('.card-marker-info');
+                    if (!infoBox) return;
+
+                    if (infoBox.dataset.exportRunId !== exportRunId) {
+                        infoBox.innerHTML = '';
+                        infoBox.dataset.exportRunId = exportRunId;
+                    }
+                    infoBox.style.display = 'block';
+
+                    groupMap.forEach((indices, text) => {
+                        const idxLabel = indices.map(i => `[${i}]`).join('');
+                        infoBox.innerHTML += `<div style="margin-bottom: 4px;"><strong>${idxLabel}</strong> ${text}</div>`;
+                    });
                 });
             }
         }
