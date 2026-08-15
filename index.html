@@ -1901,9 +1901,9 @@
     }
 
     // Applies tintImageToDataUrl once the icon has actually decoded, swapping its
-    // src permanently - used for the day/night activity icon so it's red in the
-    // live view too, not just at export time.
-    function tintActivityIconPermanently(img, color = '#cc5c5c') {
+    // src permanently - used for the day/night activity icon so it's yellow (matches
+    // OOS/info text) in the live view too, not just at export time.
+    function tintActivityIconPermanently(img, color = '#f3d674') {
         const apply = () => {
             const tinted = tintImageToDataUrl(img, color);
             if (tinted) img.src = tinted;

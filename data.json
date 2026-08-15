@@ -109,7 +109,7 @@
     { "id": "f_Zungaro", "name": "Zungaro", "img": "images/fishes/fish_Zungaro_mini.png", "shadowSize": [3], "shadowSpeed": [2, 3], "minigame": "mini_static", "oos": [1, 2, 3, 4, 12] },
     { "id": "f_AmazonPuffer", "name": "Amazon Puffer", "img": "images/fishes/fish_AmazonPuffer_mini.png" },
     { "id": "f_Corvina", "name": "Corvina", "img": "images/fishes/fish_Corvina_mini.png", "shadowSize": [1, 2], "shadowSpeed": [2, 3], "oos": [1, 2, 9, 11, 12] },
-    { "id": "f_RockBacu", "name": "Rock Bacu", "img": "images/fishes/fish_RockBacu_mini.png", "shadowSize": [2], "shadowSpeed": [1, 2], "minigame": "mini_static", "rarity": "rare" },
+    { "id": "f_RockBacu", "name": "Rock Bacu", "img": "images/fishes/fish_RockBacu_mini.png", "shadowSize": [2], "shadowSpeed": [1, 2], "minigame": "mini_static", "rarity": "rare", "activity": "day" },
     { "id": "f_Cachama", "name": "Cachama", "img": "images/fishes/fish_Cachama_mini.png", "shadowSize": [2], "shadowSpeed": [2], "minigame": "mini_static", "rarity": "epic" }
 
   ],
