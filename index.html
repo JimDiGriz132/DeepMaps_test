@@ -359,24 +359,6 @@
             filter: drop-shadow(0 0 2px #ffeb3b);
         }
 
-        .activity-badge-exclamation {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            width: 14px;
-            height: 14px;
-            background: #d32f2f;
-            color: #fff;
-            font-size: 10px;
-            font-weight: bold;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #222;
-            z-index: 11;
-        }
-
         .fish-stats { 
             font-size: calc(var(--fs) * 1.1); /* Povećano s 0.867 na 1.1 */
             color: #aaa; 
@@ -1271,13 +1253,11 @@
                 activityBadgeHtml = `
                     <div class="fish-activity-badge" title="Day only">
                         <img src="images/gui_fishinfo_active_day.png">
-                        <div class="activity-badge-exclamation">!</div>
                     </div>`;
             } else if (fish.activity === 'night') {
                 activityBadgeHtml = `
                     <div class="fish-activity-badge" title="Night only">
                         <img src="images/gui_fishinfo_active_night.png">
-                        <div class="activity-badge-exclamation">!</div>
                     </div>`;
             }
 
@@ -1357,6 +1337,13 @@
 
             card.onclick = () => activateFish(fish);
             targetCol.appendChild(card);
+
+            // Icons ship as plain white PNGs; tint them to the same red as the
+            // info-badge once loaded, permanently, so both the live view and any
+            // later html2canvas export show the same colored icon (see
+            // tintImageToDataUrl for why this uses canvas instead of CSS filter/mask).
+            const activityImg = card.querySelector('.fish-activity-badge img');
+            if (activityImg) tintActivityIconPermanently(activityImg);
         }
 
         if (currentSet) {
@@ -1889,6 +1876,45 @@
 
     // Core render logic shared by manual download AND automated/silent exports.
     // Returns a canvas, or null on error. Always restores the DOM afterwards.
+    // Recolors a loaded white/monochrome <img> to a solid color via an offscreen
+    // canvas (source-in composite keeps only the icon's alpha shape). Returns null
+    // (and leaves the image untouched) if the image isn't decoded yet or the canvas
+    // read fails for any reason - callers should treat that as "skip tinting".
+    function tintImageToDataUrl(img, color) {
+        try {
+            const w = img.naturalWidth;
+            const h = img.naturalHeight;
+            if (!w || !h) return null;
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            ctx.globalCompositeOperation = 'source-in';
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, w, h);
+            return canvas.toDataURL('image/png');
+        } catch (e) {
+            console.error('Icon tint failed:', e);
+            return null;
+        }
+    }
+
+    // Applies tintImageToDataUrl once the icon has actually decoded, swapping its
+    // src permanently - used for the day/night activity icon so it's red in the
+    // live view too, not just at export time.
+    function tintActivityIconPermanently(img, color = '#cc5c5c') {
+        const apply = () => {
+            const tinted = tintImageToDataUrl(img, color);
+            if (tinted) img.src = tinted;
+        };
+        if (img.complete && img.naturalWidth) {
+            apply();
+        } else {
+            img.addEventListener('load', apply, { once: true });
+        }
+    }
+
     async function renderExportCanvas(options) {
         const exportRunId = `${Date.now()}-${Math.random()}`;
         const {
@@ -2151,10 +2177,31 @@
             const colorCircle = card.querySelector('.avatar-color-circle');
             const nameLabel = card.querySelector('.fish-name-label');
             const oosBox = card.querySelector('div[style*="background: rgba(0,0,0,0.2)"]');
+            const activityBadge = card.querySelector('.fish-activity-badge');
 
+            // Scale the day/night activity badge by the same ratio the avatar itself
+            // is being shrunk by, so it doesn't stay oversized relative to the avatar
+            // in the export (badge is normally sized in fixed px, avatar in cqh units).
+            let avatarScale = 1;
             if (avatarWrapper) {
+                const originalAvatarSize = avatarWrapper.offsetWidth || exportAvatarSize;
+                avatarScale = exportAvatarSize / originalAvatarSize;
                 avatarWrapper.style.width = `${exportAvatarSize}px`;
                 avatarWrapper.style.height = `${exportAvatarSize}px`;
+            }
+            if (activityBadge) {
+                const badgeImg = activityBadge.querySelector('img');
+                activityBadge.style.width = `${32 * avatarScale}px`;
+                activityBadge.style.height = `${32 * avatarScale}px`;
+                activityBadge.style.top = `${-6 * avatarScale}px`;
+                activityBadge.style.right = `${-6 * avatarScale}px`;
+                activityBadge.style.borderWidth = `${2 * avatarScale}px`;
+                if (badgeImg) {
+                    badgeImg.style.width = `${20 * avatarScale}px`;
+                    badgeImg.style.height = `${20 * avatarScale}px`;
+                    // Icon is already permanently tinted red on creation (see
+                    // tintActivityIconPermanently), so nothing extra needed here for export.
+                }
             }
             if (colorCircle) {
                 colorCircle.style.width = `${exportAvatarSize}px`;
@@ -2267,6 +2314,19 @@
                 if (avatarWrapper) {
                     avatarWrapper.style.width = '';
                     avatarWrapper.style.height = '';
+                }
+                const activityBadge = card.querySelector('.fish-activity-badge');
+                if (activityBadge) {
+                    activityBadge.style.width = '';
+                    activityBadge.style.height = '';
+                    activityBadge.style.top = '';
+                    activityBadge.style.right = '';
+                    activityBadge.style.borderWidth = '';
+                    const badgeImg = activityBadge.querySelector('img');
+                    if (badgeImg) {
+                        badgeImg.style.width = '';
+                        badgeImg.style.height = '';
+                    }
                 }
                 if (nameLabel) {
                     nameLabel.style.fontSize = '';
